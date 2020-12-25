@@ -30,14 +30,15 @@ async def commandList(ctx):
   embedVar.add_field(name="commandList", value=f"Check all the commands at {commandListUrl}", inline=True)
   await ctx.send(embed=embedVar)
 
+# ping : Returns string and only used to validate bot is listening
 @bot.command()
 async def ping(ctx):
     embedVar.add_field(name="Ping", value="ding dong, ding dong", inline=False)
     await ctx.channel.send(embed=embedVar)
 
+# roll : Returns simulated dice roll based on input (XdS) where X is the number of dice and S is the number of sides
 @bot.command()
 async def roll(ctx, dice: str):
-    # Rolls a dice in NdN format.
     try:
         rolls, limit = map(int, dice.split('d'))
     except Exception:
@@ -59,6 +60,7 @@ async def adminCommandList(ctx):
   embedVar.add_field(name="commandList", value=f"Check all the commands at {commandListUrl}/admin", inline=True)
   await ctx.send(embed=embedVar)
 
+# giveRole : Assigns role to any number of members that are passed
 @bot.command(pass_context=True)
 @commands.has_role("Admin")
 async def giveRole(ctx, role: discord.Role, *members: discord.Member):
@@ -75,6 +77,7 @@ async def giveRole(ctx, role: discord.Role, *members: discord.Member):
     finally:
       await ctx.send(embed=embedVar)
 
+# removeRole : Removes a role from any number of members passed
 @bot.command(pass_context=True)
 @commands.has_role("Admin")
 async def removeRole(ctx, role: discord.Role, *members: discord.Member):
@@ -93,11 +96,14 @@ async def removeRole(ctx, role: discord.Role, *members: discord.Member):
 
 ############################################## 
 # Events
+
+#Called at the beginning of bot initialization
 @bot.event
 async def on_ready():
     print(f'Logged in as {bot.user.name} at {datetime.now(timezone("US/Eastern"))}')
     print('-----------------------------------------------------')
 
+#Override of default on_message. Clears embedVar before sending message to channel
 @bot.event
 async def on_message(message):
   embedVar.clear_fields()
