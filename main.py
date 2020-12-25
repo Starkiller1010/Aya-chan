@@ -1,6 +1,6 @@
 from src.commands import start_bot
 from src.logger import setup
-from website import init_website
+from website.server import init_website
 
 setup()
 init_website()
