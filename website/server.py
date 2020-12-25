@@ -11,6 +11,10 @@ def home():
 def service_status():
   return "Service is up"
 
+@app.route('/admin')
+def admin_home():
+  return render_template('admin.html')
+
 def run():
   app.run(host='0.0.0.0', port=8080)
 
