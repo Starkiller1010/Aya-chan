@@ -6,8 +6,9 @@ from datetime import datetime
 from pytz import timezone
 from dotenv import load_dotenv
 from discord.ext import commands
+from discord.ext.commands import ConversionError
 from discord import Forbidden
-from .services.database_service import linkAccount, unlinkAccount, getAccountName, clearDatabase
+from .services.database_service import linkAccount, unlinkAccount, getAccountName, clearDatabase, getAllLinkedAccountNames
 
 ############################################## 
 # Environment Variables
@@ -15,11 +16,12 @@ from .services.database_service import linkAccount, unlinkAccount, getAccountNam
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 PWD = os.getenv('DEV_PWD')
+API_KEY = os.getenv('ERBS_API_KEY')
 description = "ERBS API bot"
 intent = discord.Intents.default()
 intent.members = True
 embedVar = discord.Embed(title="Aya-chan", description="", color=0x00ff00)
-embedVar.set_image(url="https://media.discordapp.net/attachments/790413678935015436/791136752260612126/ayayayayayya.png")
+embedVar.set_image(url="https://cdn.discordapp.com/attachments/790413678935015436/792628485335416902/ayayayayayayayayayayayayayaya.png")
 bot = commands.Bot(command_prefix='>', description=description, intent=intent)
 commandListUrl = "https://Aya-chan.starkiller1010.repl.co"
 
@@ -135,7 +137,111 @@ async def removeRole(ctx, role: discord.Role, *members: discord.Member):
       embedVar.add_field(name="removeRole", value=f"Failed to remove role from {member.name}.", inline=False)
       await ctx.send(embed=embedVar)
 
+#Gets a linked Erbs username from db that matches the name passed in. Can only be done by users with manage_role permission
+@bot.command(pass_context=True)
+@commands.has_permissions(manage_roles=True)
+async def getUserErbsAccountName(ctx, member: discord.Member):
+  try:
+    record = await getAccountName(member)
+    if record:
+      embedVar.add_field(name="getUserErbsAccountName", value=f"{member.name} has the username {record} tied to their account.", inline=False)
+    else:
+      embedVar.add_field(name="getUserErbsAccountName", value=f"No Erbs username was found linked to the discord member {member.name}.", inline=False)
+  except:
+    embedVar.add_field(name="getUserErbsAccountName", value=f"Failed to retrieve linked account for {member.name}.", inline=False)
+  await ctx.send(embed=embedVar)
 
+#Sets a linked Erbs username from db that matches the name passed in. Can only be done by users with manage_role permission
+@bot.command(pass_context=True)
+@commands.has_permissions(manage_roles=True)
+async def setUserErbsAccountName(ctx, member: discord.Member, erbsAccountName: str, password: str):
+  if not password == PWD:
+    print("Permission rejected for 'setUserErbsAccountName'")
+    return
+  try:
+    record = await linkAccount(member.name, erbsAccountName)
+    if record:
+      embedVar.add_field(name="setUserErbsAccountName", value=f"{member.name} has the username {erbsAccountName} tied to their account.", inline=False)
+    else:
+      embedVar.add_field(name="setUserErbsAccountName", value=f"No Erbs username was found linked to the discord member {member.name}.", inline=False)
+  except:
+    embedVar.add_field(name="setUserErbsAccountName", value=f"Failed to retrieve linked account for {member.name}.", inline=False)
+  await ctx.send(embed=embedVar)
+
+#unlinks Erbs username from db that matches the name passed in. Can only be done by users with manage_role permission
+@bot.command(pass_context=True)
+@commands.has_permissions(manage_roles=True)
+async def unlinkUserErbsAccountName(ctx, member: discord.Member, password: str):
+  if not password == PWD:
+    print("Permission rejected for 'setUserErbsAccountName'")
+    return
+  try:
+    record = await unlinkAccount(member.name)
+    if record:
+      embedVar.add_field(name="setUserErbsAccountName", value=f"{member.name} had their erbs username removed from the database.", inline=False)
+    else:
+      embedVar.add_field(name="setUserErbsAccountName", value=f"No Erbs username was found linked to the discord member {member.name}.", inline=False)
+  except:
+    embedVar.add_field(name="setUserErbsAccountName", value=f"Failed to retrieve linked account for {member.name}.", inline=False)
+  await ctx.send(embed=embedVar)  
+
+#Gets all linked Erbs username from db. Can only be done by users with manage_role permission
+@bot.command(pass_context=True)
+@commands.has_permissions(manage_roles=True)
+async def getAllErbsAccountNames(ctx):
+  try:
+    listOfNames = "Here is the list of all linked erbs accounts:\n"
+    ErbsNames = await getAllLinkedAccountNames()
+    for discName in ErbsNames:
+      accName = await getAccountName(discName)
+      listOfNames = listOfNames + " Discord: " + discName + ", ERBS: " + accName + "\n"
+    embedVar.add_field(name="getAllErbsAccountName", value=f"{listOfNames}", inline=False)
+  except:
+    embedVar.add_field(name="getAllErbsAccountName", value=f"There was a problem in retrieving all linked erbs accounts.", inline=False)
+  await ctx.send(embed=embedVar)
+
+############################################## 
+# Admin Error handling
+
+@getUserErbsAccountName.error
+async def getErbsUser_error(ctx, error):
+    if isinstance(error, (ConversionError, commands.BadArgument)):
+        embedVar.add_field(name="getUserErbsAccountName", value=f"There was no member in this discord with the name you provided.", inline=False)
+        await ctx.send(embed=embedVar)
+    else:
+        raise error
+
+@setUserErbsAccountName.error
+async def setErbsUser_error(ctx, error):
+    if isinstance(error, (ConversionError, commands.BadArgument)):
+        embedVar.add_field(name="setUserErbsAccountName", value=f"There was no member in this discord with the name you provided.", inline=False)
+        await ctx.send(embed=embedVar)
+    else:
+        raise error
+
+@unlinkUserErbsAccountName.error
+async def unlinkUser_error(ctx, error):
+    if isinstance(error, (ConversionError, commands.BadArgument)):
+        embedVar.add_field(name="unlinkUserErbsAccountName", value=f"There was no member in this discord with the name you provided.", inline=False)
+        await ctx.send(embed=embedVar)
+    else:
+        raise error
+
+@removeRole.error
+async def removeRole_error(ctx, error):
+    if isinstance(error, (ConversionError, commands.BadArgument)):
+        embedVar.add_field(name="removeRole", value=f"There was/were no member(s) in this discord with a name you have provided.", inline=False)
+        await ctx.send(embed=embedVar)
+    else:
+        raise error
+
+@giveRole.error
+async def giveRole_error(ctx, error):
+    if isinstance(error, (ConversionError, commands.BadArgument)):
+        embedVar.add_field(name="giveRole", value=f"There was no member in this discord with a name you have provided.", inline=False)
+        await ctx.send(embed=embedVar)
+    else:
+        raise error
 ############################################## 
 # Events
 
@@ -150,7 +256,6 @@ async def on_ready():
 async def on_message(message):
   embedVar.clear_fields()
   await bot.process_commands(message)
-
 
 ############################################## 
 # Start Up

@@ -1,4 +1,4 @@
-from src.apis.database_api import setRecord, getRecord, deleteRecord, clearDB
+from src.apis.database_api import *
 
 async def linkAccount(discordName: str, erbsName: str):
   try:
@@ -21,7 +21,7 @@ async def getAccountName(discordName: str):
   try:
     record = await getRecord(discordName)
     return record
-  except KeyError:
+  except:
     return ""
 
 async def setEmail(discordName: str, emailAdd: str):
@@ -32,7 +32,7 @@ async def getEmail(discordName: str):
   try: 
     emailKey = discordName + ".Email"
     return await getRecord(emailKey)
-  except KeyError:
+  except:
     return ""
 
 async def clearDatabase():
@@ -41,3 +41,6 @@ async def clearDatabase():
     return True
   except:
     return False
+  
+async def getAllLinkedAccountNames():
+  return await getAllKeys()
