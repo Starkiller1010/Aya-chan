@@ -7,12 +7,14 @@ from pytz import timezone
 from dotenv import load_dotenv
 from discord.ext import commands
 from discord import Forbidden
+from .services.database_service import linkAccount, unlinkAccount, getAccountName, clearDatabase
 
 ############################################## 
 # Environment Variables
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
+PWD = os.getenv('DEV_PWD')
 description = "ERBS API bot"
 intent = discord.Intents.default()
 intent.members = True
@@ -50,6 +52,33 @@ async def roll(ctx, dice: str):
     embedVar.add_field(name="roll", value=result, inline=False)
     await ctx.send(embed=embedVar)
 
+@bot.command()
+async def linkErbsAccount(ctx, erbsUserName: str):
+  completed = await linkAccount(ctx.author.name, erbsUserName)
+  if completed:
+    embedVar.add_field(name="linkERBSAccount", value=f"{ctx.author} has linked their account username as {erbsUserName}.", inline=False)
+  else:
+    embedVar.add_field(name="linkERBSAccount", value=f"{ctx.author} failed to link their ERBS account. You may already have a linked username.", inline=False)
+  await ctx.send(embed=embedVar)
+  
+@bot.command()
+async def unlinkErbsAccount(ctx):
+  completed = await unlinkAccount(ctx.author.name)
+  if completed:
+    embedVar.add_field(name="unlinkERBSAccount", value=f"{ctx.author} has unlinked their account.", inline=False)
+  else:
+    embedVar.add_field(name="unlinkERBSAccount", value=f"{ctx.author} failed to unlink their ERBS account. You may have not linked an account.", inline=False)
+  await ctx.send(embed=embedVar)
+
+@bot.command()
+async def getErbsAccountName(ctx):
+  record = await getAccountName(ctx.author.name)
+  if record:
+    embedVar.add_field(name="getErbsAccountName", value=f"Here is your erbs account name linked to this user: {record}.", inline=False)
+  else:
+    embedVar.add_field(name="getErbsAccountName", value=f"No erbs account name was found linked to this user.", inline=False)
+  await ctx.send(embed=embedVar)
+
 ############################################## 
 # Admin Commands
 
@@ -76,6 +105,19 @@ async def giveRole(ctx, role: discord.Role, *members: discord.Member):
       embedVar.add_field(name="giveRole", value=f"Failed to give role to {member.name}.", inline=False)
     finally:
       await ctx.send(embed=embedVar)
+
+@bot.command(pass_context=True)
+@commands.has_role("Admin")
+async def deleteAllErbsLinkedAccounts(ctx, password: str):
+  if not password == PWD:
+    print("Permission rejected for 'deleteAllErbsLinkedAccounts'")
+    return
+  completed = await clearDatabase()
+  if completed:
+    embedVar.add_field(name="deleteAllErbsLinkedAccounts", value=f"Cleared Internal Database.", inline=False)
+  else:
+    embedVar.add_field(name="deleteAllErbsLinkedAccounts", value=f"Failed to clear database.", inline=False)
+  await ctx.send(embed=embedVar)
 
 # removeRole : Removes a role from any number of members passed
 @bot.command(pass_context=True)

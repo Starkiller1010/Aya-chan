@@ -1,13 +1,22 @@
 from replit import db
 
-def setRecord(key, value):
+async def setRecord(key:str, value:str):
   db[key] = value
 
-def getRecord(key):
-  return db[key]
+async def getRecord(key: str):
+  value = db[key]
+  return value
 
-def deleteRecord(key):
+async def deleteRecord(key: str):
   del db[key]
 
-def getAllRecords():
+async def getAllRecords():
   return db
+
+# Does not work
+async def clearDB():
+  db.clear()
+
+async def getAllRecordsForUser(key: str):
+  records = db.prefix(key)
+  return records
