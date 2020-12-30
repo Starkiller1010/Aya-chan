@@ -17,12 +17,13 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 PWD = os.getenv('DEV_PWD')
 API_KEY = os.getenv('ERBS_API_KEY')
+BASE_URL = os.getenv('ERBS_URL')
 description = "ERBS API bot"
 intent = discord.Intents.default()
 intent.members = True
 embedVar = discord.Embed(title="Aya-chan", description="", color=0x00ff00)
 embedVar.set_image(url="https://cdn.discordapp.com/attachments/790413678935015436/792628485335416902/ayayayayayayayayayayayayayaya.png")
-bot = commands.Bot(command_prefix='>', description=description, intent=intent)
+bot = commands.AutoShardedBot(command_prefix='>', description=description, intent=intent)
 commandListUrl = "https://Aya-chan.starkiller1010.repl.co"
 
 ############################################## 
@@ -80,6 +81,54 @@ async def getErbsAccountName(ctx):
   else:
     embedVar.add_field(name="getErbsAccountName", value=f"No erbs account name was found linked to this user.", inline=False)
   await ctx.send(embed=embedVar)
+
+@bot.command()
+async def getErbsSoloLeaderboard(ctx):
+  leaders = await getLeaderboard(baseUrl=BASE_URL, seasonId='1', teamMode='1', apiKey=API_KEY)
+  if leaders:
+    embeds:list = []
+    embeds.append(discord.Embed(color=ctx.author.color).add_field(name="Rank 1-25", value=f"{''.join(leaders[0])}"))
+    embeds.append(discord.Embed(color=ctx.author.color).add_field(name="Rank 26-50", value=f"{''.join(leaders[1])}"))
+    embeds.append(discord.Embed(color=ctx.author.color).add_field(name="Rank 51-75", value=f"{''.join(leaders[2])}"))
+    embeds.append(discord.Embed(color=ctx.author.color).add_field(name="Rank 76-100", value=f"{''.join(leaders[3])}"))
+
+    paginator = Pagination.AutoEmbedPaginator(ctx)
+    await paginator.run(embeds)
+  else:
+    embedVar.add_field(name="getErbsSoloLeaderboard", value=f"No Leaderboard was found.", inline=False)
+    await ctx.send(embed=embeds)
+
+@bot.command()
+async def getErbsDuoLeaderboard(ctx):
+  leaders = await getLeaderboard(baseUrl=BASE_URL, seasonId='1', teamMode='2', apiKey=API_KEY)
+  if leaders:
+    embeds:list = []
+    embeds.append(discord.Embed(color=ctx.author.color).add_field(name="Rank 1-25", value=f"{''.join(leaders[0])}"))
+    embeds.append(discord.Embed(color=ctx.author.color).add_field(name="Rank 26-50", value=f"{''.join(leaders[1])}"))
+    embeds.append(discord.Embed(color=ctx.author.color).add_field(name="Rank 51-75", value=f"{''.join(leaders[2])}"))
+    embeds.append(discord.Embed(color=ctx.author.color).add_field(name="Rank 76-100", value=f"{''.join(leaders[3])}"))
+
+    paginator = Pagination.AutoEmbedPaginator(ctx)
+    await paginator.run(embeds)
+  else:
+    embedVar.add_field(name="getErbsDuoLeaderboard", value=f"No Leaderboard was found.", inline=False)
+    await ctx.send(embed=embeds)
+
+@bot.command()
+async def getErbsSquadLeaderboard(ctx):
+  leaders = await getLeaderboard(baseUrl=BASE_URL, seasonId='1', teamMode='3', apiKey=API_KEY)
+  if leaders:
+    embeds:list = []
+    embeds.append(discord.Embed(color=ctx.author.color).add_field(name="Rank 1-25", value=f"{''.join(leaders[0])}"))
+    embeds.append(discord.Embed(color=ctx.author.color).add_field(name="Rank 26-50", value=f"{''.join(leaders[1])}"))
+    embeds.append(discord.Embed(color=ctx.author.color).add_field(name="Rank 51-75", value=f"{''.join(leaders[2])}"))
+    embeds.append(discord.Embed(color=ctx.author.color).add_field(name="Rank 76-100", value=f"{''.join(leaders[3])}"))
+
+    paginator = Pagination.AutoEmbedPaginator(ctx)
+    await paginator.run(embeds)
+  else:
+    embedVar.add_field(name="getErbsSquadLeaderboard", value=f"No Leaderboard was found.", inline=False)
+    await ctx.send(embed=embeds)
 
 ############################################## 
 # Admin Commands
