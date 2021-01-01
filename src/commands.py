@@ -59,6 +59,11 @@ async def roll(ctx, dice: str):
 
 @bot.command()
 async def linkErbsAccount(ctx, erbsUserName: str):
+  valid = await getUser(baseUrl=BASE_URL, nickname=erbsUserName, apiKey=API_KEY)
+  if not valid:
+    embedVar.add_field(name="linkERBSAccount", value=f"Username '{erbsUserName}' does not exist in ERBS.", inline=False)
+    await ctx.send(embed=embedVar)
+    return
   completed = await linkAccount(ctx.author.name, erbsUserName)
   if completed:
     embedVar.add_field(name="linkERBSAccount", value=f"{ctx.author} has linked their account username as {erbsUserName}.", inline=False)

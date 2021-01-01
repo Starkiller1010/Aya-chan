@@ -14,6 +14,13 @@ async def getLeaderboard(baseUrl: str, seasonId: str, teamMode: str, apiKey: str
         return chunks
     return []
 
+async def getUser(baseUrl:str, nickname: str, apiKey: str):
+    data = await get(url=f"{baseUrl}/{version}/user/nickname?query={nickname}", apiKey=apiKey)
+    print(data)
+    if not data['code'] == 404: 
+        return data['user']
+    else: 
+        return ''
 
 def parseLeaderboard(data: list):
     temp: list = []
