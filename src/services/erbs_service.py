@@ -7,10 +7,10 @@ async def getLeaderboard(baseUrl: str, seasonId: str, teamMode: str, apiKey: str
         data: list = await get(url=f"{baseUrl}/{version}/rank/top/{seasonId}/{teamMode}", apiKey=apiKey)
         chunks:list = []
         parsedData = parseLeaderboard(data['topRanks'])
-        chunks.append(''.join(parsedData[0:25]))
-        chunks.append(''.join(parsedData[25:50]))
-        chunks.append(''.join(parsedData[50:75]))
-        chunks.append(''.join(parsedData[75:100]))
+        i = 0
+        while i < len(parsedData):
+            chunks.append(''.join(parsedData[i:i+25]))
+            i+=25
         return chunks
     return []
 

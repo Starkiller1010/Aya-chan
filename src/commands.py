@@ -99,10 +99,10 @@ async def getErbsLeaderboard(ctx, gameMode: str):
   leaders = await getLeaderboard(baseUrl=BASE_URL, seasonId='1', teamMode=mode, apiKey=API_KEY)
   if leaders:
     embeds:list = []
-    embeds.append(discord.Embed(color=ctx.author.color).add_field(name="Rank 1-25", value=f"{''.join(leaders[0])}"))
-    embeds.append(discord.Embed(color=ctx.author.color).add_field(name="Rank 26-50", value=f"{''.join(leaders[1])}"))
-    embeds.append(discord.Embed(color=ctx.author.color).add_field(name="Rank 51-75", value=f"{''.join(leaders[2])}"))
-    embeds.append(discord.Embed(color=ctx.author.color).add_field(name="Rank 76-100", value=f"{''.join(leaders[3])}"))
+    i = 1
+    for page in leaders:
+      embeds.append(discord.Embed(color=ctx.author.color).add_field(name=f"Rank {i}-{i+24}", value=f"{''.join(page)}"))
+      i+=25
 
     paginator = Pagination.AutoEmbedPaginator(ctx)
     await paginator.run(embeds)
