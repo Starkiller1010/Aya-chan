@@ -9,6 +9,8 @@ from discord.ext import commands
 from discord.ext.commands import ConversionError
 from discord import Forbidden
 from .services.database_service import linkAccount, unlinkAccount, getAccountName, clearDatabase, getAllLinkedAccountNames
+from .services.erbs_service import getLeaderboard, getUserRank, getUser, gameModeSwitch
+from DiscordUtils import Pagination
 
 ############################################## 
 # Environment Variables
@@ -22,16 +24,16 @@ description = "ERBS API bot"
 intent = discord.Intents.default()
 intent.members = True
 embedVar = discord.Embed(title="Aya-chan", description="", color=0x00ff00)
-embedVar.set_image(url="https://cdn.discordapp.com/attachments/790413678935015436/792628485335416902/ayayayayayayayayayayayayayaya.png")
+embedVar.set_thumbnail(url="https://cdn.discordapp.com/attachments/790413678935015436/792628485335416902/ayayayayayayayayayayayayayaya.png")
 bot = commands.AutoShardedBot(command_prefix='>', description=description, intent=intent)
 commandListUrl = "https://Aya-chan.starkiller1010.repl.co"
 
 ############################################## 
 # General Commands
 
-# commandList : Returns url for general community commands.
+# cmdList : Returns url for general community commands.
 @bot.command()
-async def commandList(ctx):
+async def cmdList(ctx):
   embedVar.add_field(name="commandList", value=f"Check all the commands at {commandListUrl}", inline=True)
   await ctx.send(embed=embedVar)
 
@@ -133,16 +135,16 @@ async def getErbsSquadLeaderboard(ctx):
 ############################################## 
 # Admin Commands
 
-# adminCommandList : Returns url for admin commands.
+# adminHelp : Returns url for admin commands.
 @bot.command()
-@commands.has_role("Admin")
-async def adminCommandList(ctx):
+@commands.has_permissions(manage_roles=True)
+async def adminHelp(ctx):
   embedVar.add_field(name="commandList", value=f"Check all the commands at {commandListUrl}/admin", inline=True)
   await ctx.send(embed=embedVar)
 
 # giveRole : Assigns role to any number of members that are passed
 @bot.command(pass_context=True)
-@commands.has_role("Admin")
+@commands.has_permissions(manage_roles=True)
 async def giveRole(ctx, role: discord.Role, *members: discord.Member):
     try:
       for member in members:
@@ -151,14 +153,14 @@ async def giveRole(ctx, role: discord.Role, *members: discord.Member):
         await ctx.send(embed=embedVar)
       return
     except Forbidden:
-      embedVar.add_field(name="giveRole", value=f"Failed to give role to {member.name} because you do not have permissions to do so.", inline=False)
+      embedVar.add_field(name="giveRole", value=f"Failed to give role to {member.name} because Aya-chan does not have permissions to do so. Please lower the targeted role in Role list or raise ERBS API Bot role higher than target.", inline=False)
       await ctx.send(embed=embedVar)
     except:
       embedVar.add_field(name="giveRole", value=f"Failed to give role to {member.name}.", inline=False)
       await ctx.send(embed=embedVar)
 
 @bot.command(pass_context=True)
-@commands.has_role("Admin")
+@commands.has_permissions(manage_roles=True)
 async def deleteAllErbsLinkedAccounts(ctx, password: str):
   if not password == PWD:
     print("Permission rejected for 'deleteAllErbsLinkedAccounts'")
@@ -172,7 +174,7 @@ async def deleteAllErbsLinkedAccounts(ctx, password: str):
 
 # removeRole : Removes a role from any number of members passed
 @bot.command(pass_context=True)
-@commands.has_role("Admin")
+@commands.has_permissions(manage_roles=True)
 async def removeRole(ctx, role: discord.Role, *members: discord.Member):
     try:
       for member in members:

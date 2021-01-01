@@ -1,12 +1,12 @@
-from src.apis.erbs_api import *
+from ..apis.erbs_api import get
 
 version="v1"
 
 async def getLeaderboard(baseUrl: str, seasonId: str, teamMode: str, apiKey: str):
     if teamMode.isnumeric and seasonId.isnumeric:
-        data: list = await get(f"{baseUrl}/{version}/rank/top/{seasonId}/{teamMode}", apiKey)
+        data: list = await get(url=f"{baseUrl}/{version}/rank/top/{seasonId}/{teamMode}", apiKey=apiKey)
         chunks:list = []
-        parsedData = parseLeaderboard(data)
+        parsedData = parseLeaderboard(data['topRanks'])
         chunks.append(''.join(parsedData[0:25]))
         chunks.append(''.join(parsedData[25:50]))
         chunks.append(''.join(parsedData[50:75]))
