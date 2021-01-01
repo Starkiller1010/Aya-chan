@@ -254,6 +254,14 @@ async def getAllErbsAccountNames(ctx):
 ############################################## 
 # Error handling
 
+@getErbsLeaderboard.error
+async def getLeaderboard_error(ctx, error):
+  if isinstance(error, (ConversionError, commands.BadArgument)):
+      embedVar.add_field(name="getMyCurrentRank", value=f"Please input a gameMode. [Solo, Duo, Squad]", inline=False)
+      await ctx.send(embed=embedVar)
+  else:
+      raise error
+
 @getMyCurrentRank.error
 async def getRank_error(ctx, error):
   if isinstance(error, (ConversionError, commands.BadArgument)):
