@@ -90,40 +90,13 @@ async def getErbsAccountName(ctx):
   await ctx.send(embed=embedVar)
 
 @bot.command()
-async def getErbsSoloLeaderboard(ctx):
-  leaders = await getLeaderboard(baseUrl=BASE_URL, seasonId='1', teamMode='1', apiKey=API_KEY)
-  if leaders:
-    embeds:list = []
-    embeds.append(discord.Embed(color=ctx.author.color).add_field(name="Rank 1-25", value=f"{''.join(leaders[0])}"))
-    embeds.append(discord.Embed(color=ctx.author.color).add_field(name="Rank 26-50", value=f"{''.join(leaders[1])}"))
-    embeds.append(discord.Embed(color=ctx.author.color).add_field(name="Rank 51-75", value=f"{''.join(leaders[2])}"))
-    embeds.append(discord.Embed(color=ctx.author.color).add_field(name="Rank 76-100", value=f"{''.join(leaders[3])}"))
-
-    paginator = Pagination.AutoEmbedPaginator(ctx)
-    await paginator.run(embeds)
-  else:
-    embedVar.add_field(name="getErbsSoloLeaderboard", value=f"No Leaderboard was found.", inline=False)
-    await ctx.send(embed=embeds)
-
-@bot.command()
-async def getErbsDuoLeaderboard(ctx):
-  leaders = await getLeaderboard(baseUrl=BASE_URL, seasonId='1', teamMode='2', apiKey=API_KEY)
-  if leaders:
-    embeds:list = []
-    embeds.append(discord.Embed(color=ctx.author.color).add_field(name="Rank 1-25", value=f"{''.join(leaders[0])}"))
-    embeds.append(discord.Embed(color=ctx.author.color).add_field(name="Rank 26-50", value=f"{''.join(leaders[1])}"))
-    embeds.append(discord.Embed(color=ctx.author.color).add_field(name="Rank 51-75", value=f"{''.join(leaders[2])}"))
-    embeds.append(discord.Embed(color=ctx.author.color).add_field(name="Rank 76-100", value=f"{''.join(leaders[3])}"))
-
-    paginator = Pagination.AutoEmbedPaginator(ctx)
-    await paginator.run(embeds)
-  else:
-    embedVar.add_field(name="getErbsDuoLeaderboard", value=f"No Leaderboard was found.", inline=False)
-    await ctx.send(embed=embeds)
-
-@bot.command()
-async def getErbsSquadLeaderboard(ctx):
-  leaders = await getLeaderboard(baseUrl=BASE_URL, seasonId='1', teamMode='3', apiKey=API_KEY)
+async def getErbsLeaderboard(ctx, gameMode: str):
+  mode = gameModeSwitch(gameMode)
+  if not mode:
+    embedVar.add_field(name='getErbsLeaderboard', value=f'Game mode was incorrect. Please input any ONE of these:| Solo(s) | Duo(s) | Squad(s) |')
+    await ctx.send(embed=embedVar)
+    return
+  leaders = await getLeaderboard(baseUrl=BASE_URL, seasonId='1', teamMode=mode, apiKey=API_KEY)
   if leaders:
     embeds:list = []
     embeds.append(discord.Embed(color=ctx.author.color).add_field(name="Rank 1-25", value=f"{''.join(leaders[0])}"))
