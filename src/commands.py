@@ -137,6 +137,28 @@ async def getErbsSquadLeaderboard(ctx):
     embedVar.add_field(name="getErbsSquadLeaderboard", value=f"No Leaderboard was found.", inline=False)
     await ctx.send(embed=embeds)
 
+@bot.command()
+async def getMyCurrentRank(ctx, gameMode: str):
+  erbsUsername = getAccountName(ctx.author.name)
+  if not erbsUsername:
+    embedVar.add_field(name="getMyCurrentRank", value=f"No erbs account name was found linked to this user.", inline=False)
+    await ctx.send(embed=embedVar)
+    return
+  mode = gameModeSwitch(gameMode)
+  if not mode:
+    embedVar.add_field(name='getMyCurrentRank', value=f'Game mode was incorrect. Please input any ONE of these:| Solo | Duo| Squad |')
+    await ctx.send(embed=embedVar)
+    return
+  rank = await getUserRank(baseUrl=BASE_URL, nickname=erbsUsername, seasonId='1', teamMode=mode, apiKey=API_KEY)
+  if not rank == 0:
+    embedVar.add_field(name='getMyCurrentRank', value=f'Your rank in season 1 of {gameMode} is rank: {rank}')
+  elif rank == 0:
+    embedVar.add_field(name='getMyCurrentRank', value=f'You have not played all your placement games. Please try again after playing more ranked.')
+  else:
+    embedVar.add_field(name='getMyCurrentRank', value=f'Failed to retrieve your rank. Double-check to see if your linked username is correct.')
+  await ctx.send(embed=embedVar)
+
+
 ############################################## 
 # Admin Commands
 

@@ -14,6 +14,16 @@ async def getLeaderboard(baseUrl: str, seasonId: str, teamMode: str, apiKey: str
         return chunks
     return []
 
+async def getUserRank(baseUrl:str, nickname: str, seasonId: str, teamMode: str, apiKey: str):
+    user = await getUser(baseUrl=baseUrl, nickname=nickname, apiKey=apiKey)
+    userNum = user['userNum']
+    if userNum:
+        dataRank = await get(url=f"{baseUrl}/{version}/rank/{userNum}/{seasonId}/{teamMode}", apiKey=apiKey)
+        if dataRank:
+            return dataRank['userRank']['rank']
+    else:
+        return ''
+
 async def getUser(baseUrl:str, nickname: str, apiKey: str):
     data = await get(url=f"{baseUrl}/{version}/user/nickname?query={nickname}", apiKey=apiKey)
     print(data)
@@ -27,3 +37,14 @@ def parseLeaderboard(data: list):
     for player in data:
         temp.append(f"Rank {player['rank']}: {player['nickname']}\n")
     return temp
+
+def gameModeSwitch(modeName: str):
+    modeName = modeName.lower()
+    switcher = {
+       'solo': '1',
+       'duo': '2',
+       'squad': '3'
+    }
+    return switcher.get(modeName, '')
+
+    
