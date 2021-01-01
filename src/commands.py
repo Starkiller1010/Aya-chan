@@ -34,7 +34,7 @@ commandListUrl = "https://Aya-chan.starkiller1010.repl.co"
 # cmdList : Returns url for general community commands.
 @bot.command()
 async def cmdList(ctx):
-  embedVar.add_field(name="commandList", value=f"Check all the commands at {commandListUrl}", inline=True)
+  embedVar.add_field(name="cmdList", value=f"Check all the commands at {commandListUrl}", inline=True)
   await ctx.send(embed=embedVar)
 
 # ping : Returns string and only used to validate bot is listening
@@ -139,7 +139,7 @@ async def getErbsSquadLeaderboard(ctx):
 
 @bot.command()
 async def getMyCurrentRank(ctx, gameMode: str):
-  erbsUsername = getAccountName(ctx.author.name)
+  erbsUsername = await getAccountName(ctx.author.name)
   if not erbsUsername:
     embedVar.add_field(name="getMyCurrentRank", value=f"No erbs account name was found linked to this user.", inline=False)
     await ctx.send(embed=embedVar)
@@ -166,7 +166,7 @@ async def getMyCurrentRank(ctx, gameMode: str):
 @bot.command()
 @commands.has_permissions(manage_roles=True)
 async def adminHelp(ctx):
-  embedVar.add_field(name="commandList", value=f"Check all the commands at {commandListUrl}/admin", inline=True)
+  embedVar.add_field(name="adminHelp", value=f"Check all the commands at {commandListUrl}/admin", inline=True)
   await ctx.send(embed=embedVar)
 
 # giveRole : Assigns role to any number of members that are passed
@@ -279,7 +279,15 @@ async def getAllErbsAccountNames(ctx):
   await ctx.send(embed=embedVar)
 
 ############################################## 
-# Admin Error handling
+# Error handling
+
+@getMyCurrentRank.error
+async def getRank_error(ctx, error):
+  if isinstance(error, (ConversionError, commands.BadArgument)):
+      embedVar.add_field(name="getMyCurrentRank", value=f"Please input a gameMode. [Solo, Duo, Squad]", inline=False)
+      await ctx.send(embed=embedVar)
+  else:
+      raise error
 
 @getUserErbsAccountName.error
 async def getErbsUser_error(ctx, error):
