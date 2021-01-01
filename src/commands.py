@@ -152,9 +152,9 @@ async def giveRole(ctx, role: discord.Role, *members: discord.Member):
       return
     except Forbidden:
       embedVar.add_field(name="giveRole", value=f"Failed to give role to {member.name} because you do not have permissions to do so.", inline=False)
+      await ctx.send(embed=embedVar)
     except:
       embedVar.add_field(name="giveRole", value=f"Failed to give role to {member.name}.", inline=False)
-    finally:
       await ctx.send(embed=embedVar)
 
 @bot.command(pass_context=True)
