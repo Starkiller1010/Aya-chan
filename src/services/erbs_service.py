@@ -42,7 +42,10 @@ def gameModeSwitch(modeName: str):
     modeName = modeName.lower()
     switcher = {
        'solo': '1',
+       'solos': '1',
        'duo': '2',
+       'duos': '2',
+       'squads': '3',
        'squad': '3'
     }
     return switcher.get(modeName, '')
