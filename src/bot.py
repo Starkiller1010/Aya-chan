@@ -1,7 +1,7 @@
 # Imports
 import os
 from datetime import datetime
-
+from .logger import logInfo, logErr
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -69,6 +69,7 @@ async def on_ready():
     """Listener to on_ready event"""
     print(f'Logged in as {bot.user.name} at {datetime.now(timezone("US/Eastern"))}')
     print('-----------------------------------------------------')
+    logInfo(f'{bot.user.name} online')
 
 #Override of default on_message. Clears embedVar before sending message to channel
 @bot.event
@@ -82,10 +83,12 @@ async def on_message(message):
 async def on_command_error(ctx, error):
     """Listener to on_command_error event"""
     if isinstance(error, commands.errors.CheckFailure):
+        logInfo(f'{ctx.author.name} failed to authorize check for {ctx.command}')
         pass
     else:
         print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
+        logErr(f'Error occurred in {ctx.command} by {ctx.author.name}: {error}')
 
 
 ############################################## 
