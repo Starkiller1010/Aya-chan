@@ -21,13 +21,15 @@ class AdminCommands(commands.Cog):
     @commands.command()
     @commands.has_permissions(manage_roles=True)
     async def adminHelp(self, ctx):
+      """Url to admin site"""
       embedVar.add_field(name="adminHelp", value=f"Check all the commands at {ADMIN_SITE}", inline=True)
       await ctx.send(embed=embedVar)
 
     # giveRole : Assigns role to any number of members that are passed
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, brief="Adds role to member(s)")
     @commands.has_permissions(manage_roles=True)
     async def giveRole(self, ctx, role: discord.Role, *members: discord.Member):
+        """Adds role to any number of members. This command requires any role for this bot to be above the role being assigned."""
         try:
           for member in members:
             await member.add_roles(role)
@@ -42,9 +44,10 @@ class AdminCommands(commands.Cog):
           await ctx.send(embed=embedVar)
 
     # removeRole : Removes a role from any number of members passed
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, brief="Removes role from member(s)")
     @commands.has_permissions(manage_roles=True)
     async def removeRole(self, ctx, role: discord.Role, *members: discord.Member):
+        """Removes role to any number of members. This command requires any role for this bot to be above the role being assigned."""
         try:
           for member in members:
             await member.remove_roles(role)
@@ -62,6 +65,7 @@ class AdminCommands(commands.Cog):
 
     @giveRole.error
     async def giveRole_error(self, ctx, error):
+        """Error handling for giveRole"""
         if isinstance(error, (ConversionError, commands.BadArgument)):
             embedVar.add_field(name="giveRole", value=f"There was no member in this discord with a name you have provided.", inline=False)
             await ctx.send(embed=embedVar)
@@ -70,6 +74,7 @@ class AdminCommands(commands.Cog):
 
     @removeRole.error
     async def removeRole_error(self, ctx, error):
+        """Error handling for removeRole"""
         if isinstance(error, (ConversionError, commands.BadArgument)):
             embedVar.add_field(name="removeRole", value=f"There was/were no member(s) in this discord with a name you have provided.", inline=False)
             await ctx.send(embed=embedVar)
@@ -78,4 +83,5 @@ class AdminCommands(commands.Cog):
 ####################################
 # Link    
 def setup(bot):
-    bot.add_cog(AdminCommands(bot))
+  """Adds extension as a cog"""
+  bot.add_cog(AdminCommands(bot))

@@ -24,9 +24,10 @@ class DB(commands.Cog):
 # Commands
     
     #Gets a linked Erbs username from db that matches the name passed in. Can only be done by users with manage_role permission
-    @commands.command(pass_context=True, name="getUsername")
+    @commands.command(pass_context=True, name="getUsername", brief="Gets Linked ERBS name")
     @commands.has_permissions(manage_roles=True)
     async def getUserErbsAccountName(self, ctx, member: discord.Member):
+      """Gets the linked ERBS Username of a discord member."""
       try:
         record = await getAccountName(member)
         if record:
@@ -38,9 +39,10 @@ class DB(commands.Cog):
       await ctx.send(embed=embedVar)
 
     #Gets all linked Erbs username from db. Can only be done by users with manage_role permission
-    @commands.command(pass_context=True, name="getAllUsernames")
+    @commands.command(pass_context=True, name="getAllUsernames", brief="Gets All linked ERBS names")
     @commands.has_permissions(manage_roles=True)
     async def getAllErbsAccountNames(self, ctx):
+      """Gets All linked ERBS Usernames."""
       try:
         listOfNames = "Here is the list of all linked erbs accounts:\n"
         ErbsNames = await getAllLinkedAccountNames()
@@ -53,9 +55,10 @@ class DB(commands.Cog):
       await ctx.send(embed=embedVar)
 
       #Sets a linked Erbs username from db that matches the name passed in. Can only be done by users with manage_role permission
-    @commands.command(pass_context=True, name="setUsername")
+    @commands.command(pass_context=True, name="setUsername", brief="Sets linked ERBS name", hidden=True)
     @commands.has_permissions(manage_roles=True)
     async def setUserErbsAccountName(self, ctx, member: discord.Member, erbsAccountName: str, password: str):
+      """Sets an user's linked ERBS Username."""
       if not password == PWD:
         print("Permission rejected for 'setUserErbsAccountName'")
         return
@@ -70,9 +73,10 @@ class DB(commands.Cog):
       await ctx.send(embed=embedVar)
 
     #unlinks Erbs username from db that matches the name passed in. Can only be done by users with manage_role permission
-    @commands.command(pass_context=True, name="deleteUsername")
+    @commands.command(pass_context=True, name="deleteUsername", brief="Removes linked ERBS name", hidden=True)
     @commands.has_permissions(manage_roles=True)
     async def deleteUserErbsAccountName(self, ctx, member: discord.Member, password: str):
+      """Removes linked ERBS Usernames from user."""
       if not password == PWD:
         print("Permission rejected for 'deleteUserErbsAccountName'")
         return
@@ -86,9 +90,10 @@ class DB(commands.Cog):
         embedVar.add_field(name="deleteUserErbsAccountName", value=f"Failed to retrieve linked account for {member.name}.", inline=False)
       await ctx.send(embed=embedVar)  
 
-    @commands.command(pass_context=True, name="deleteAllLinkedUsernames")
+    @commands.command(pass_context=True, name="deleteAllLinkedUsernames", brief="Clears ERBS Usernames", hidden=True)
     @commands.has_permissions(manage_roles=True)
     async def deleteAllErbsLinkedAccounts(self, ctx, password: str):
+      """Removes All linked ERBS Usernames."""
       if not password == PWD:
         print("Permission rejected for 'deleteAllErbsLinkedAccounts'")
         return
@@ -104,6 +109,7 @@ class DB(commands.Cog):
 
     @getUserErbsAccountName.error
     async def getErbsUser_error(self, ctx, error):
+        """Error handling for getErbsUser"""
         if isinstance(error, (ConversionError, commands.BadArgument)):
             embedVar.add_field(name="getUserErbsAccountName", value=f"There was no member in this discord with the name you provided.", inline=False)
             await ctx.send(embed=embedVar)
@@ -112,6 +118,7 @@ class DB(commands.Cog):
 
     @setUserErbsAccountName.error
     async def setErbsUser_error(self, ctx, error):
+        """Error handling for setErbsUser"""
         if isinstance(error, (ConversionError, commands.BadArgument)):
             embedVar.add_field(name="setUserErbsAccountName", value=f"There was no member in this discord with the name you provided.", inline=False)
             await ctx.send(embed=embedVar)
@@ -120,6 +127,7 @@ class DB(commands.Cog):
 
     @deleteUserErbsAccountName.error
     async def unlinkUser_error(self, ctx, error):
+        """Error handling for unlinkUser"""
         if isinstance(error, (ConversionError, commands.BadArgument)):
             embedVar.add_field(name="unlinkUserErbsAccountName", value=f"There was no member in this discord with the name you provided.", inline=False)
             await ctx.send(embed=embedVar)
@@ -129,4 +137,5 @@ class DB(commands.Cog):
 #############################################
 # Link
 def setup(bot):
-    bot.add_cog(DB(bot))
+  """Adds extension as a cog"""
+  bot.add_cog(DB(bot))

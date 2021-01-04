@@ -1,10 +1,11 @@
-from ..apis.erbs_api import get
+from ..apis.gateway_api import get
 
 version="v1"
 
 async def getLeaderboard(baseUrl: str, seasonId: str, teamMode: str, apiKey: str):
+    """"Get Global Leaderboard for a specific game mode and season from API"""
     if teamMode.isnumeric and seasonId.isnumeric:
-        data: list = await get(url=f"{baseUrl}/{version}/rank/top/{seasonId}/{teamMode}", apiKey=apiKey)
+        data: list = await get(url=f"{baseUrl}/{version}/rank/top/{seasonId}/{teamMode}", headers={'x-api-key' : apiKey})
         chunks:list = []
         parsedData = parseLeaderboard(data['topRanks'])
         i = 0
@@ -15,30 +16,33 @@ async def getLeaderboard(baseUrl: str, seasonId: str, teamMode: str, apiKey: str
     return []
 
 async def getUserRank(baseUrl:str, nickname: str, seasonId: str, teamMode: str, apiKey: str):
+    """"Get the passed in nickname's rank from API"""
     user = await getUser(baseUrl=baseUrl, nickname=nickname, apiKey=apiKey)
     userNum = user['userNum']
     if userNum:
-        dataRank = await get(url=f"{baseUrl}/{version}/rank/{userNum}/{seasonId}/{teamMode}", apiKey=apiKey)
+        dataRank = await get(url=f"{baseUrl}/{version}/rank/{userNum}/{seasonId}/{teamMode}", headers={'x-api-key' : apiKey})
         if dataRank:
             return dataRank['userRank']['rank']
     else:
         return ''
 
 async def getUser(baseUrl:str, nickname: str, apiKey: str):
-    data = await get(url=f"{baseUrl}/{version}/user/nickname?query={nickname}", apiKey=apiKey)
-    print(data)
+    """"Get the passed in nicknames base information from API"""
+    data = await get(url=f"{baseUrl}/{version}/user/nickname?query={nickname}", headers={'x-api-key': apiKey})
     if not data['code'] == 404: 
         return data['user']
     else: 
         return ''
 
 def parseLeaderboard(data: list):
+    """"Helper function for getLeaderboard that returns a list of formatted strings"""
     temp: list = []
     for player in data:
         temp.append(f"Rank {player['rank']}: {player['nickname']}\n")
     return temp
 
 def gameModeSwitch(modeName: str):
+    """"General Helper function that takes in a string and matches it to a number if in the switch"""
     modeName = modeName.lower()
     switcher = {
        'solo': '1',

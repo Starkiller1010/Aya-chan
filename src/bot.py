@@ -24,7 +24,7 @@ intent.members = True
 bot = commands.AutoShardedBot(command_prefix='>', description="ERBS API bot", intent=intent)
 startup_extensions = ["src.cogs.erbs", "src.cogs.admin", "src.cogs.db_admin", "src.cogs.basic"]
 
-embedVar = discord.Embed(title="Aya-chan", color=0x00ff00)
+embedVar = discord.Embed(color=0x00ff00)
 embedVar.set_thumbnail(url=BOT_IMAGE)
 
 async def is_owner(ctx):
@@ -32,10 +32,10 @@ async def is_owner(ctx):
 ############################################## 
 # General Commands
 
-@bot.command()
+@bot.command(hidden=True)
 @commands.check(is_owner)
 async def load(ctx, extension_name : str):
-    """Loads an extension."""
+    """Loads an extension"""
     try:
         bot.load_extension(extension_name)
     except (AttributeError, ImportError) as e:
@@ -43,17 +43,17 @@ async def load(ctx, extension_name : str):
         return
     await ctx.send("{} loaded.".format(extension_name))
 
-@bot.command()
+@bot.command(hidden=True)
 @commands.check(is_owner)
 async def unload(ctx, extension_name : str):
-    """Unloads an extension."""
+    """Unloads an extension"""
     bot.unload_extension(extension_name)
     await ctx.send("{} unloaded.".format(extension_name))
 
-@bot.command()
+@bot.command(hidden=True)
 @commands.check(is_owner)
 async def reload(ctx, extension_name : str):
-    """"Reloads an extension."""
+    """Reloads an extension"""
     try:
         bot.reload_extension(extension_name)
     except (AttributeError, ImportError) as e:
@@ -66,17 +66,21 @@ async def reload(ctx, extension_name : str):
 #Called at the beginning of bot initialization
 @bot.event
 async def on_ready():
+    """Listener to on_ready event"""
     print(f'Logged in as {bot.user.name} at {datetime.now(timezone("US/Eastern"))}')
     print('-----------------------------------------------------')
 
 #Override of default on_message. Clears embedVar before sending message to channel
 @bot.event
 async def on_message(message):
-  embedVar.clear_fields()
-  await bot.process_commands(message)
+    """Listener to on_message event"""  
+    embedVar.clear_fields()
+    await bot.process_commands(message)
+
 
 @bot.event
 async def on_command_error(ctx, error):
+    """Listener to on_command_error event"""
     if isinstance(error, commands.errors.CheckFailure):
         pass
     else:
@@ -87,13 +91,15 @@ async def on_command_error(ctx, error):
 ############################################## 
 # Start Up
 def start_bot():
-  for extension in startup_extensions:
+    """Entry method. Loads all extension files and runs the bot"""
+    for extension in startup_extensions:
         try:
             bot.load_extension(extension)
         except Exception as e:
             exc = '{}: {}'.format(type(e).__name__, e)
             print('Failed to load extension {}\n{}'.format(extension, exc))
-  bot.run(TOKEN)
+    bot.run(TOKEN)
 
 def getEmbedVar():
-  return embedVar
+    """Returns embedVar global variable"""
+    return embedVar

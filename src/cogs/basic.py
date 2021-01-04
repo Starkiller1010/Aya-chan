@@ -17,18 +17,21 @@ class basicCommands(commands.Cog):
     # cmdList : Returns url for general community commands.
     @commands.command()
     async def cmdList(self, ctx):
-      embedVar.add_field(name="cmdList", value=f"Check all the commands at {BASE_SITE}", inline=True)
-      await ctx.send(embed=embedVar)
+        """Url to website"""
+        embedVar.add_field(name="cmdList", value=f"Check all the commands at {BASE_SITE}", inline=True)
+        await ctx.send(embed=embedVar)
 
     # ping : Returns string and only used to validate bot is listening
-    @commands.command()
+    @commands.command(brief="Pings bot")
     async def ping(self, ctx):
+        """Verify bot is receiving commands"""
         embedVar.add_field(name="Ping", value="ding dong, ding dong", inline=False)
         await ctx.channel.send(embed=embedVar)
 
     # roll : Returns simulated dice roll based on input (XdS) where X is the number of dice and S is the number of sides
-    @commands.command()
+    @commands.command(brief="Rolls Dice")
     async def roll(self, ctx, dice: str):
+        """Rolls X amount of dice with N amount of faces. Params: {X}d{N}"""
         try:
             rolls, limit = map(int, dice.split('d'))
         except Exception:
@@ -45,4 +48,5 @@ class basicCommands(commands.Cog):
 #########################################
 # Link
 def setup(bot):
+    """Adds extension as a cog"""
     bot.add_cog(basicCommands(bot))
