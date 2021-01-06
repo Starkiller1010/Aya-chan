@@ -17,14 +17,6 @@ class AdminCommands(commands.Cog):
 #####################################
 # Commands
 
-    # adminHelp : Returns url for admin commands.
-    @commands.command()
-    @commands.has_permissions(manage_roles=True)
-    async def adminHelp(self, ctx):
-      """Url to admin site"""
-      embedVar.add_field(name="adminHelp", value=f"Check all the commands at {ADMIN_SITE}", inline=True)
-      await ctx.send(embed=embedVar)
-
     # giveRole : Assigns role to any number of members that are passed
     @commands.command(pass_context=True, brief="Adds role to member(s)")
     @commands.has_permissions(manage_roles=True)

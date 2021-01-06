@@ -14,13 +14,6 @@ class basicCommands(commands.Cog):
 #########################################
 # Commands
 
-    # cmdList : Returns url for general community commands.
-    @commands.command()
-    async def cmdList(self, ctx):
-        """Url to website"""
-        embedVar.add_field(name="cmdList", value=f"Check all the commands at {BASE_SITE}", inline=True)
-        await ctx.send(embed=embedVar)
-
     # ping : Returns string and only used to validate bot is listening
     @commands.command(brief="Pings bot")
     async def ping(self, ctx):
