@@ -104,11 +104,27 @@ class ERBSCommands(commands.Cog):
 ##################################################
 # Error Handling
 
+
+    @linkERBSUserName.error
+    async def linkAccount_error(self, ctx, error):
+      """Error handling for linkERBSUsername"""
+      if isinstance(error, (ConversionError, commands.BadArgument)):
+          embedVar.add_field(name="linkERBSUserName", value=f"You have inputted an non-valid username, please make sure it is a string of characters.", inline=False)
+          await ctx.send(embed=embedVar)
+      elif isinstance(error, commands.MissingRequiredArgument):
+          embedVar.add_field(name="linkERBSUserName", value=f"Please enter your ERBS username after the command.", inline=False)
+          await ctx.send(embed=embedVar)
+      else:
+        raise error
+
     @getErbsLeaderboard.error
     async def getLeaderboard_error(self, ctx, error):
       """Error handling for getLeaderboard"""
       if isinstance(error, (ConversionError, commands.BadArgument)):
-          embedVar.add_field(name="getMyCurrentRank", value=f"Please input a gameMode. [Solo, Duo, Squad]", inline=False)
+          embedVar.add_field(name="getErbsLeaderboard", value=f"You have inputted an non-valid gameMode. Try again with any of the following: [Solo, Duo, Squad]", inline=False)
+          await ctx.send(embed=embedVar)
+      elif isinstance(error, commands.MissingRequiredArgument):
+          embedVar.add_field(name="getErbsLeaderboard", value=f"Please input a gameMode. [Solo, Duo, Squad]", inline=False)
           await ctx.send(embed=embedVar)
       else:
           raise error
@@ -118,6 +134,9 @@ class ERBSCommands(commands.Cog):
     async def getRank_error(self, ctx, error):
       """Error handling for getRank"""
       if isinstance(error, (ConversionError, commands.BadArgument)):
+          embedVar.add_field(name="getMyCurrentRank", value=f"You have inputted an non-valid gameMode. Try again with any of the following: [Solo, Duo, Squad]", inline=False)
+          await ctx.send(embed=embedVar)
+      elif isinstance(error, commands.MissingRequiredArgument):
           embedVar.add_field(name="getMyCurrentRank", value=f"Please input a gameMode. [Solo, Duo, Squad]", inline=False)
           await ctx.send(embed=embedVar)
       else:

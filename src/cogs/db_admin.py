@@ -113,6 +113,9 @@ class DB(commands.Cog):
         if isinstance(error, (ConversionError, commands.BadArgument)):
             embedVar.add_field(name="getUserErbsAccountName", value=f"There was no member in this discord with the name you provided.", inline=False)
             await ctx.send(embed=embedVar)
+        elif isinstance(error, commands.MissingRequiredArgument):
+            embedVar.add_field(name="getUserErbsAccountName", value="You are missing an argument, please pass in the discord name after the command.")
+            await ctx.send(embed=embedVar)
         else:
             raise error
 
@@ -121,6 +124,9 @@ class DB(commands.Cog):
         """Error handling for setErbsUser"""
         if isinstance(error, (ConversionError, commands.BadArgument)):
             embedVar.add_field(name="setUserErbsAccountName", value=f"There was no member in this discord with the name you provided.", inline=False)
+            await ctx.send(embed=embedVar)
+        elif isinstance(error, commands.MissingRequiredArgument):
+            embedVar.add_field(name="setUserErbsAccountName", value="You are missing an argument, please pass in the username and then the discord name after the command.")
             await ctx.send(embed=embedVar)
         else:
             raise error
@@ -131,8 +137,36 @@ class DB(commands.Cog):
         if isinstance(error, (ConversionError, commands.BadArgument)):
             embedVar.add_field(name="unlinkUserErbsAccountName", value=f"There was no member in this discord with the name you provided.", inline=False)
             await ctx.send(embed=embedVar)
+        elif isinstance(error, commands.MissingRequiredArgument):
+            embedVar.add_field(name="unlinkUserErbsAccountName", value="You are missing an argument, please pass in the discord name after the command.")
+            await ctx.send(embed=embedVar)
         else:
             raise error
+
+    @deleteAllErbsLinkedAccounts.error
+    async def deleteAllNames_error(self, ctx, error):
+      """Error handling for deleteAllErbsAccountNames"""
+      if isinstance(error, (ConversionError, commands.BadArgument)):
+        embedVar.add_field(name="deleteAllErbsAccountNames", value=f"You passed in something that isn't a string.", inline=False)
+        await ctx.send(embed=embedVar)
+      elif isinstance(error, commands.MissingRequiredArgument):
+        embedVar.add_field(name="deleteAllErbsAccountNames", value=f"You need to pass in a password for this command.", inline=False)
+        await ctx.send(embed=embedVar)
+      else:
+        raise error
+
+    @setUserErbsAccountName.error
+    async def setUserErbsAccountName_error(self, ctx, error):
+      """Error handling for setUserErbsAccountName"""
+      if isinstance(error, (ConversionError, commands.BadArgument)):
+        embedVar.add_field(name="setUserErbsAccountName", value=f"There was no member in this discord with the name you provided.", inline=False)
+        await ctx.send(embed=embedVar)
+      elif isinstance(error, commands.MissingRequiredArgument):
+        embedVar.add_field(name="setUserErbsAccountName", value=f"You need to pass in a discord name, username and, password for this command in that order.", inline=False)
+        await ctx.send(embed=embedVar)
+      else:
+        raise error
+
 
 #############################################
 # Link

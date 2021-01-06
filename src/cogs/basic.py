@@ -38,6 +38,17 @@ class basicCommands(commands.Cog):
     
 #########################################
 # Error Handling
+
+    @roll.error()
+    async def roll_error(self, ctx, error):
+        if isinstance(error, (commands.ConversionError, commands.BadArgument)):
+            embedVar.add_field(name="roll_error", value="The format for the command is XdN where X is the number of dice and N is the number of faces")
+            await ctx.send(embed=embedVar)
+        elif isinstance(error, commands.MissingRequiredArgument):
+            embedVar.add_field(name="roll_error", value="Please add after the command XdN, where X is the number of dice and N is the number of faces")
+            await ctx.send(embed=embedVar)
+        else:
+            raise error
 #########################################
 # Link
 def setup(bot):
