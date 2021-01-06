@@ -14,7 +14,7 @@ from ..services.erbs_service import (gameModeSwitch, getLeaderboard, getUser,
 API_KEY = os.getenv('ERBS_API_KEY')
 BASE_URL = os.getenv('ERBS_URL')
 
-embedVar = getEmbedVar
+embedVar = getEmbedVar()
 currentSeasonId = '1'
 class ERBSCommands(commands.Cog):
     def __init__(self, bot):

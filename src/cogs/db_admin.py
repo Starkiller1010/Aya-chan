@@ -14,7 +14,7 @@ from ..services.database_service import (clearDatabase, getAccountName,
 load_dotenv()
 PWD = os.getenv('DEV_PWD')
 
-embedVar = getEmbedVar
+embedVar = getEmbedVar()
 
 class DB(commands.Cog):
     def __init__(self, bot):

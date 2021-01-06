@@ -7,7 +7,7 @@ from discord.ext.commands import ConversionError
 
 from ..bot import getEmbedVar
 
-embedVar = getEmbedVar
+embedVar = getEmbedVar()
 ADMIN_SITE= f"{os.getenv('SITE_URL')}/admin"
 
 class AdminCommands(commands.Cog):
@@ -25,9 +25,13 @@ class AdminCommands(commands.Cog):
         """Adds role to any number of members. This command requires any role for this bot to be above the role being assigned."""
         try:
           for member in members:
-            if (ctx.guild.me.top_role.position > member.top_role.position) and not (member.guild.permissions.adminstrator):
+            if (ctx.guild.me.top_role.position > member.top_role.position 
+                and not member.guild_permissions.administrator):
               await member.add_roles(role)
               embedVar.add_field(name="giveRole", value=f"{member.name} has been giving a role: [{role.name}].", inline=False)
+              await ctx.send(embed=embedVar)
+            else:
+              embedVar.add_field(name="giveRole", value=f"{member.name} is a higher role than either the bot and/or the user.", inline=False)
               await ctx.send(embed=embedVar)
           return
         except Forbidden:
@@ -45,9 +49,13 @@ class AdminCommands(commands.Cog):
         """Removes role to any number of members. This command requires any role for this bot to be above the role being assigned."""
         try:
           for member in members:
-            if (ctx.guild.me.top_role.position > member.top_role.position) and not (member.guild.permissions.adminstrator):
+            if (ctx.guild.me.top_role.position > member.top_role.position 
+                and not member.guild_permissions.administrator):
               await member.remove_roles(role)
               embedVar.add_field(name="removeRole", value=f"{member.name} had the role: [{role.name}] removed.", inline=False)
+              await ctx.send(embed=embedVar)
+            else:
+              embedVar.add_field(name="removeRole", value=f"{member.name} is a higher role than either the bot and/or the user.", inline=False)
               await ctx.send(embed=embedVar)
         except Forbidden:
           embedVar.add_field(name="removeRole", value=f"Failed to remove role from {member.name} because you do not have permissions to do so.", inline=False)
