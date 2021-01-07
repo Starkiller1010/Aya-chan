@@ -4,7 +4,7 @@ import discord
 from discord import Forbidden
 from discord.ext import commands
 from discord.ext.commands import ConversionError
-
+from ..logger import logInfo, logErr
 from ..bot import getEmbedVar
 
 embedVar = getEmbedVar()
@@ -70,6 +70,7 @@ class AdminCommands(commands.Cog):
     @giveRole.error
     async def giveRole_error(self, ctx, error):
         """Error handling for giveRole"""
+        logErr(f'Error within giveRole: {error}')
         if isinstance(error, (ConversionError, commands.BadArgument)):
             embedVar.add_field(name="giveRole", value=f"There was no member in this discord with a name you have provided.", inline=False)
             await ctx.send(embed=embedVar)
@@ -85,6 +86,7 @@ class AdminCommands(commands.Cog):
     @removeRole.error
     async def removeRole_error(self, ctx, error):
         """Error handling for removeRole"""
+        logErr(f'Error within removeRole: {error}')
         if isinstance(error, (ConversionError, commands.BadArgument)):
             embedVar.add_field(name="removeRole", value=f"There was/were no member(s) in this discord with a name you have provided.", inline=False)
             await ctx.send(embed=embedVar)

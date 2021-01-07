@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import ConversionError
 from DiscordUtils import Pagination
-
+from ..logger import logInfo, logErr
 from ..bot import getEmbedVar
 from ..services.database_service import (getAccountName, linkAccount,
                                          unlinkAccount)
@@ -108,6 +108,7 @@ class ERBSCommands(commands.Cog):
     @linkERBSUserName.error
     async def linkAccount_error(self, ctx, error):
       """Error handling for linkERBSUsername"""
+      logErr(f'Error within linkERBSUsername: {error}')
       if isinstance(error, (ConversionError, commands.BadArgument)):
           embedVar.add_field(name="linkERBSUserName", value=f"You have inputted an non-valid username, please make sure it is a string of characters.", inline=False)
           await ctx.send(embed=embedVar)
@@ -120,6 +121,7 @@ class ERBSCommands(commands.Cog):
     @getErbsLeaderboard.error
     async def getLeaderboard_error(self, ctx, error):
       """Error handling for getLeaderboard"""
+      logErr(f'Error within getLeaderboard: {error}')
       if isinstance(error, (ConversionError, commands.BadArgument)):
           embedVar.add_field(name="getErbsLeaderboard", value=f"You have inputted an non-valid gameMode. Try again with any of the following: [Solo, Duo, Squad]", inline=False)
           await ctx.send(embed=embedVar)
@@ -133,6 +135,7 @@ class ERBSCommands(commands.Cog):
     @getMyCurrentRank.error
     async def getRank_error(self, ctx, error):
       """Error handling for getRank"""
+      logErr(f'Error within getRank: {error}')
       if isinstance(error, (ConversionError, commands.BadArgument)):
           embedVar.add_field(name="getMyCurrentRank", value=f"You have inputted an non-valid gameMode. Try again with any of the following: [Solo, Duo, Squad]", inline=False)
           await ctx.send(embed=embedVar)

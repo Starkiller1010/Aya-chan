@@ -3,7 +3,7 @@ import random
 import discord
 from discord.ext import commands
 from ..bot import getEmbedVar
-
+from ..logger import logInfo, logErr
 embedVar = getEmbedVar()
 BASE_SITE= f"{os.getenv('SITE_URL')}"
 
@@ -41,6 +41,8 @@ class basicCommands(commands.Cog):
 
     @roll.error
     async def roll_error(self, ctx, error):
+        """Error handing roll"""
+        logErr(f'Error within roll: {error}')
         if isinstance(error, (commands.ConversionError, commands.BadArgument)):
             embedVar.add_field(name="roll_error", value="The format for the command is XdN where X is the number of dice and N is the number of faces")
             await ctx.send(embed=embedVar)

@@ -7,6 +7,7 @@ from discord.ext.commands import ConversionError
 from dotenv import load_dotenv
 
 from ..bot import getEmbedVar
+from ..logger import logInfo, logErr
 from ..services.database_service import (clearDatabase, getAccountName,
                                          getAllLinkedAccountNames, linkAccount,
                                          unlinkAccount)
@@ -110,6 +111,7 @@ class DB(commands.Cog):
     @getUserErbsAccountName.error
     async def getErbsUser_error(self, ctx, error):
         """Error handling for getErbsUser"""
+        logErr(f'Error within getErbsUser: {error}')
         if isinstance(error, (ConversionError, commands.BadArgument)):
             embedVar.add_field(name="getUserErbsAccountName", value=f"There was no member in this discord with the name you provided.", inline=False)
             await ctx.send(embed=embedVar)
@@ -122,6 +124,7 @@ class DB(commands.Cog):
     @setUserErbsAccountName.error
     async def setErbsUser_error(self, ctx, error):
         """Error handling for setErbsUser"""
+        logErr(f'Error within setErbsUser: {error}')
         if isinstance(error, (ConversionError, commands.BadArgument)):
             embedVar.add_field(name="setUserErbsAccountName", value=f"There was no member in this discord with the name you provided.", inline=False)
             await ctx.send(embed=embedVar)
@@ -134,6 +137,7 @@ class DB(commands.Cog):
     @deleteUserErbsAccountName.error
     async def unlinkUser_error(self, ctx, error):
         """Error handling for unlinkUser"""
+        logErr(f'Error within unlinkUser: {error}')
         if isinstance(error, (ConversionError, commands.BadArgument)):
             embedVar.add_field(name="unlinkUserErbsAccountName", value=f"There was no member in this discord with the name you provided.", inline=False)
             await ctx.send(embed=embedVar)
@@ -146,6 +150,7 @@ class DB(commands.Cog):
     @deleteAllErbsLinkedAccounts.error
     async def deleteAllNames_error(self, ctx, error):
       """Error handling for deleteAllErbsAccountNames"""
+      logErr(f'Error within deleteAllErbsAccountNames: {error}')
       if isinstance(error, (ConversionError, commands.BadArgument)):
         embedVar.add_field(name="deleteAllErbsAccountNames", value=f"You passed in something that isn't a string.", inline=False)
         await ctx.send(embed=embedVar)
@@ -158,6 +163,7 @@ class DB(commands.Cog):
     @setUserErbsAccountName.error
     async def setUserErbsAccountName_error(self, ctx, error):
       """Error handling for setUserErbsAccountName"""
+      logErr(f'Error within setUserErbsAccountName: {error}')
       if isinstance(error, (ConversionError, commands.BadArgument)):
         embedVar.add_field(name="setUserErbsAccountName", value=f"There was no member in this discord with the name you provided.", inline=False)
         await ctx.send(embed=embedVar)
@@ -166,8 +172,6 @@ class DB(commands.Cog):
         await ctx.send(embed=embedVar)
       else:
         raise error
-
-
 #############################################
 # Link
 def setup(bot):
