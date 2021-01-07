@@ -90,6 +90,14 @@ async def on_command_error(ctx, error):
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
         logErr(f'Error occurred in {ctx.command} by {ctx.author.name}: {error}')
 
+@bot.event
+async def on_guild_join(guild):
+    sys_channel = guild.system_channel
+    embedVar.add_field(name="Hello!",value="My name is Aya-chan. I'll help you talk to ERBS and do moderation commands. Use >help if you want to see what I can do.")
+    if sys_channel:
+        await sys_channel.send(embed=embedVar)
+    else:
+        await guild.owner(embed=embedVar)
 
 ############################################## 
 # Start Up
