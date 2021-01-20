@@ -9,7 +9,7 @@ from ..bot import getEmbedVar
 from ..services.database_service import (getAccountName, linkAccount,
                                          unlinkAccount)
 from ..services.erbs_service import (gameModeSwitch, getLeaderboard, getUser,
-                                     getUserRank)
+                                     getUserRank, getMatchHistory)
 
 API_KEY = os.getenv('ERBS_API_KEY')
 BASE_URL = os.getenv('ERBS_URL')
@@ -100,6 +100,38 @@ class ERBSCommands(commands.Cog):
       else:
         embedVar.add_field(name='getMyCurrentRank', value=f'Failed to retrieve your rank. Double-check to see if your linked username is correct.')
       await ctx.send(embed=embedVar)
+
+    @commands.command(name="getMatchHistory", brief="User's Match History")
+    async def getMatchHistory(self, ctx, nickname: str = ''):
+      """Gets the author's match history in a specific game mode. Must have account linked."""
+      user: dict
+      if nickname:
+        user = await getUser(baseUrl=BASE_URL, nickname=nickname, apiKey=API_KEY)
+      else:
+        erbsUsername = await getAccountName(ctx.author.name)
+        if not erbsUsername:
+          embedVar.add_field(name="getMatchHistory", value=f"No erbs account name was found linked to this user.", inline=False)
+          await ctx.send(embed=embedVar)
+          return
+        else: user = (await getUser(baseUrl=BASE_URL, nickname=erbsUsername, apiKey=API_KEY))['userNum']
+      if not user:
+          embedVar.add_field(name="getMatchHistory", value=f"User was not found in ERBS.", inline=False)
+          await ctx.send(embed=embedVar)
+          return
+      history = await getMatchHistory(baseUrl=BASE_URL, userId=user['userNum'], apiKey=API_KEY)
+      if not history:
+        embedVar.add_field(name="getMatchHistory", value=f"No history was found for this user.", inline=False)
+        await ctx.send(embed=embedVar)
+        return
+      else:
+        embeds:list = []
+        for match in history:
+          embeds.append(discord.Embed(color=ctx.author.color).add_field(name="getMatchHistory", value=
+          (f"Game: {match['gameId']}\nGame Mode: {gameModeSwitch(match['matchingMode'])}\nLevel: {match['characterLevel']}\nRanked: {match['gameRank']}\nKills: {match['playerKill']}\nAssists: {match['playerAssistant']}\nHunt: {match['monsterKill']}"), inline=False))
+        paginator = Pagination.AutoEmbedPaginator(ctx)
+        await paginator.run(embeds)
+      
+      
 
 ##################################################
 # Error Handling

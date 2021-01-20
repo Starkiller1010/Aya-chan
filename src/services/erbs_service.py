@@ -34,6 +34,14 @@ async def getUser(baseUrl:str, nickname: str, apiKey: str):
     else: 
         return ''
 
+async def getMatchHistory(baseUrl:str, userId: str, apiKey: str):
+    """Gets the user's match history"""
+    data = await get(url=f"{baseUrl}/{version}/user/games/{userId}", headers={'x-api-key': apiKey})
+    if not data['code'] == 404:
+        return data['userGames']
+    else:
+        return ''
+
 def parseLeaderboard(data: list):
     """"Helper function for getLeaderboard that returns a list of formatted strings"""
     temp: list = []
@@ -41,17 +49,25 @@ def parseLeaderboard(data: list):
         temp.append(f"Rank {player['rank']}: {player['nickname']}\n")
     return temp
 
-def gameModeSwitch(modeName: str):
+def gameModeSwitch(mode: any):
     """"General Helper function that takes in a string and matches it to a number if in the switch"""
-    modeName = modeName.lower()
-    switcher = {
-       'solo': '1',
-       'solos': '1',
-       'duo': '2',
-       'duos': '2',
-       'squads': '3',
-       'squad': '3'
-    }
-    return switcher.get(modeName, '')
+    if type(mode) == str:
+        modeName = mode.lower()
+        switcher = {
+        'solo': '1',
+        'solos': '1',
+        'duo': '2',
+        'duos': '2',
+        'squads': '3',
+        'squad': '3'
+        }
+        return switcher.get(modeName, '')
+    elif type(mode) == int:
+        switcher = {
+        1: 'Solo',
+        2: 'Duos',
+        3: 'Squads'
+        }
+        return switcher.get(mode, '')
 
     
