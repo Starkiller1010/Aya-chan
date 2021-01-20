@@ -63,11 +63,12 @@ def gameModeSwitch(mode: any):
         }
         return switcher.get(modeName, '')
     elif type(mode) == int:
+        modeName = str(mode)
         switcher = {
-        1: 'Solo',
-        2: 'Duos',
-        3: 'Squads'
+        "1": 'Solo',
+        "2": 'Duos',
+        "3": 'Squads'
         }
-        return switcher.get(mode, '')
+        return switcher.get(modeName, '')
 
     

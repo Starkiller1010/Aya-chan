@@ -113,7 +113,7 @@ class ERBSCommands(commands.Cog):
           embedVar.add_field(name="getMatchHistory", value=f"No erbs account name was found linked to this user.", inline=False)
           await ctx.send(embed=embedVar)
           return
-        else: user = (await getUser(baseUrl=BASE_URL, nickname=erbsUsername, apiKey=API_KEY))['userNum']
+        else: user = (await getUser(baseUrl=BASE_URL, nickname=erbsUsername, apiKey=API_KEY))
       if not user:
           embedVar.add_field(name="getMatchHistory", value=f"User was not found in ERBS.", inline=False)
           await ctx.send(embed=embedVar)
