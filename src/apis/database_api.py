@@ -23,3 +23,28 @@ async def getAllRecordsForUser(key: str):
 async def getAllKeys():
   """"Gets all keys"""
   return db.keys()
+
+def importDB():
+    file = open('export_db.txt', 'r',encoding='utf8')
+    importDB = file.readlines()
+    for record in importDB:
+        row = record.replace('"', '').split(':')
+        key = row[0].strip()
+        value = row[1].strip()
+        print(key)
+        print(value)
+    file.close()
+
+def exportDB():
+    file = open('export_db.txt','w+',encoding='utf8')
+    keys:list = db.keys()
+    file.write('{\n')
+    i = 0
+    for key in keys:
+      if not key == 'O//W//O' and not key == 'O//W//O#0282':
+        file.write(f'\t"{str(key)}":"{db[str(key)]}"')
+        if i < len(keys):
+          file.write(',\n')
+          i+=1
+    file.write('}')
+    file.close()
