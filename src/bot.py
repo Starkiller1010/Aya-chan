@@ -76,6 +76,7 @@ async def on_ready():
 async def on_message(message):
     """Listener to on_message event"""  
     embedVar.clear_fields()
+    embedVar.set_thumbnail(url=BOT_IMAGE)
     await bot.process_commands(message)
 
 
