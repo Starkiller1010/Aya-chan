@@ -115,3 +115,7 @@ def start_bot():
 def getEmbedVar():
     """Returns embedVar global variable"""
     return embedVar
+
+def getThumbnailUrl():
+    """Returns thumbnail url"""
+    return BOT_IMAGE

@@ -193,7 +193,7 @@ class AdminCommands(commands.Cog):
         else:
             raise error
 
-    @clear_messages.EnvironmentError
+    @clear_messages.error
     async def clear_error(self, ctx, error):
       """Error handling for clear messages"""
       logErr(f'Error within clear_messages: {error}')

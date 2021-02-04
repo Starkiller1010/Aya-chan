@@ -5,11 +5,11 @@ from discord.ext import commands
 from discord.ext.commands import ConversionError
 from DiscordUtils import Pagination
 from ..logger import logInfo, logErr
-from ..bot import getEmbedVar
+from ..bot import getEmbedVar, getThumbnailUrl
 from ..services.database_service import (getAccountName, linkAccount,
                                          unlinkAccount)
 from ..services.erbs_service import (gameModeSwitch, getLeaderboard, getUser,
-                                     getUserRank, getMatchHistory)
+                                     getUserRank, getMatchHistory, findGameStats)
 
 API_KEY = os.getenv('ERBS_API_KEY')
 BASE_URL = os.getenv('ERBS_URL')
@@ -102,8 +102,10 @@ class ERBSCommands(commands.Cog):
       await ctx.send(embed=embedVar)
 
     @commands.command(name="getMatchHistory", brief="User's Match History")
-    async def getMatchHistory(self, ctx, nickname: str = ''):
-      """Gets the author's match history in a specific game mode. Must have account linked."""
+    async def getMatchHistory(self, ctx, nickname: str = '', gameId: str = ''):
+      """Gets the author's match history in a specific game mode. 
+      If no nickname passed, uses linked account assigned to user.
+      If a gameId is passed in, will user's stats for that game."""
       user: dict
       if nickname:
         user = await getUser(baseUrl=BASE_URL, nickname=nickname, apiKey=API_KEY)
@@ -113,23 +115,93 @@ class ERBSCommands(commands.Cog):
           embedVar.add_field(name="getMatchHistory", value=f"No erbs account name was found linked to this user.", inline=False)
           await ctx.send(embed=embedVar)
           return
-        else: user = (await getUser(baseUrl=BASE_URL, nickname=erbsUsername, apiKey=API_KEY))
+        else: 
+          user = (await getUser(baseUrl=BASE_URL, nickname=erbsUsername, apiKey=API_KEY))
       if not user:
           embedVar.add_field(name="getMatchHistory", value=f"User was not found in ERBS.", inline=False)
           await ctx.send(embed=embedVar)
           return
-      history = await getMatchHistory(baseUrl=BASE_URL, userId=user['userNum'], apiKey=API_KEY)
+      else: 
+        history = await getMatchHistory(baseUrl=BASE_URL, userId=user['userNum'], apiKey=API_KEY)
       if not history:
         embedVar.add_field(name="getMatchHistory", value=f"No history was found for this user.", inline=False)
         await ctx.send(embed=embedVar)
         return
+      elif gameId:
+        while(True):
+          match = await findGameStats(matchHistory=history, gameId=gameId)
+          if not match:
+            if not history['next']:
+              embedVar.add_field(name="getMatchHistory", value=f"No game with that id was found for this user.", inline=False)
+              await ctx.send(embed=embedVar)
+              return
+            else:
+              print(f"NextId: {history['next']}")
+              history = await getMatchHistory(baseUrl=BASE_URL, userId=user['userNum'], apiKey=API_KEY, nextId=history['next'])
+          else:
+            embeds:list = []
+            page0 = [("Game ID", match['id'], False),
+                      ("Character", match['character'], True),
+                      ("Ranked", match['placement'], True),
+                      ("Game Mode", match['mode'], True),                    
+                      ("Kills", match['kills'], True),
+                      ("Assists", match['assists'], True),
+                      ("Hunts", match['hunts'], True),
+                      ("Max HP", match['maxHp'], True),
+                      ("Max SP", match['maxSp'], True),
+                      ("Attack Power", match['attackPower'], True),
+                      ("Defense", match['defense'], True),
+                      ("HP Regen", match['hpRegen'], True),
+                      ("SP Regen", match['spRegen'], True),
+                      ("Attack Speed", match['attackSpeed'], True),
+                      ("Move Speed", match['moveSpeed'], True),
+                      ("Sight Range", match['sightRange'], True),
+                      ("Attack Range", match['attackRange'], True),
+                      ("Critical Chance", match['criticalStrikeChance'], True),
+                      ("Critical Damage", match['criticalStrikeDamage'], True),
+                      ("Cooldown Reduction", match['coolDownReduction'], True),
+                      ("LifeSteal", match['lifeSteal'], True)]
+          skills = ""
+          for skill in match['skillLevelOrder']:
+            skills = skills + f"{skill}: " + match['skillLevelOrder'][skill]
+
+          mastery = ""
+          for masteryCode in match['masteryLevels']:
+            mastery = mastery + f"{masteryCode}: " + f"{match['masteryLevels'][masteryCode]}\n" 
+
+          page1 = [("Level", match['level'], False),
+                    ("Mastery", mastery, False),
+                    ("Skill Order", skills, False),
+                    ("Weapon", match['weapon'], True),
+                    ("Chest", match['chest'], True),
+                    ("Head", match['head'], True),
+                    ("Gloves", match['gloves'], True),
+                    ("Boots", match['boots'], True),
+                    ("Accessory", match['accessory'], True)]
+
+          embeds.append(discord.Embed())
+          for name, value, inline in page0:
+            embeds[0].add_field(name=name, value=value, inline=inline)
+
+          embeds.append(discord.Embed())
+          for name, value, inline in page1:
+            embeds[1].add_field(name=name, value=value, inline=inline)
+          
+          for x in range(len(embeds)):
+            embeds[x].set_thumbnail(url=getThumbnailUrl())
+
+          paginator = Pagination.AutoEmbedPaginator(ctx, after=30)
+          await paginator.run(embeds)
+          return
       else:
         embeds:list = []
-        for match in history:
-          embeds.append(discord.Embed(color=ctx.author.color).add_field(name="getMatchHistory", value=
+        matchHistory = history["userGames"]
+        for match in matchHistory:
+          embeds.append(discord.Embed().add_field(name="getMatchHistory", value=
           (f"Game: {match['gameId']}\nGame Mode: {gameModeSwitch(match['matchingMode'])}\nLevel: {match['characterLevel']}\nRanked: {match['gameRank']}\nKills: {match['playerKill']}\nAssists: {match['playerAssistant']}\nHunt: {match['monsterKill']}"), inline=False))
         paginator = Pagination.AutoEmbedPaginator(ctx)
         await paginator.run(embeds)
+        
       
       
 
