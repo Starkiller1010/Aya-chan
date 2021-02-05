@@ -124,7 +124,7 @@ async def findGameStats(matchHistory: dict, gameId: int):
     return ''
 
 def findSkillNames(characterName: str, skills: []):
-    with open(os.path.join(__location__, '..\\resources\\lookup\\skillgroups.json'), encoding='utf-8') as b:
+    with open(os.path.join(__location__, '../resources/lookup/skillgroups.json'), encoding='utf-8') as b:
         groups = json.load(b)
     result = {}
     for skill in groups['data']:
@@ -158,7 +158,7 @@ def findSkillNames(characterName: str, skills: []):
     return result
 
 def findCharacter(charNum: int):
-    with open(os.path.join(__location__, '..\\resources\\lookup\\characters.json'), encoding='utf-8') as c:
+    with open(os.path.join(__location__, '../resources/lookup/characters.json'), encoding='utf-8') as c:
         characters = json.load(c)
     for character in characters['data']:
         if character['code'] == charNum:
@@ -166,14 +166,14 @@ def findCharacter(charNum: int):
     return str(charNum)
 
 def findEquipment(code: int, isWeapon: bool = False):
-    with open(os.path.join(__location__, '..\\resources\\lookup\\itemNames.json'), encoding='utf-8') as a:
+    with open(os.path.join(__location__, '../resources/lookup/itemNames.json'), encoding='utf-8') as a:
         inv_names = json.load(a)
         names = {v: k for k, v in inv_names.items()}
     if not isWeapon:
-        with open(os.path.join(__location__, '..\\resources\\lookup\\armors.json'), encoding='utf-8') as b:
+        with open(os.path.join(__location__, '../resources/lookup/armors.json'), encoding='utf-8') as b:
             equipments = json.load(b)
     else:
-        with open(os.path.join(__location__, '..\\resources\\lookup\\weapons.json'), encoding='utf-8') as c:
+        with open(os.path.join(__location__, '../resources/lookup/weapons.json'), encoding='utf-8') as c:
             equipments = json.load(c)
     for equipment in equipments['data']:
         if equipment['code'] == code:
@@ -184,7 +184,7 @@ def findEquipment(code: int, isWeapon: bool = False):
     return str(code)
                 
 def parseMastery(masteryLevels: dict):
-    with open(os.path.join(__location__, '..\\resources\\lookup\\masteryCodes.json'), encoding='utf-8') as a:
+    with open(os.path.join(__location__, '../resources/lookup/masteryCodes.json'), encoding='utf-8') as a:
         masteries = json.load(a)
     result = {}
     for code in masteryLevels:
