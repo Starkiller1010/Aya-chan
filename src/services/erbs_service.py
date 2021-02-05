@@ -61,47 +61,15 @@ async def findGameStats(matchHistory: dict, gameId: str):
     for match in matchHistory['userGames']:
         result = {}
         if match['gameId'] == int(gameId):
-            skills: collections.OrderedDict = list(match['skillLevelInfo'])
+            skills = match['skillLevelInfo']
 
             result['character'] = findCharacter(match['characterNum'])
             result['kills'] = match['playerKill']
             result['assists'] = match['playerAssistant']
             result['id'] = match['gameId']
-            result['mode'] = gameModeSwitch(match['matchingMode'])
             result['level'] = match['characterLevel']
             result['placement'] = match['gameRank']
             result['hunts'] = match['monsterKill']
-            result['masteryLevels'] = parseMastery(match['masteryLevel'])
-
-            if match['equipment']['0']:
-                result['weapon'] = findEquipment(match['equipment']['0'], True)
-            if match['equipment']['1']:
-                result['chest'] = findEquipment(match['equipment']['1'])
-            if match['equipment']['2']:
-                result['head'] = findEquipment(match['equipment']['2'])
-            if match['equipment']['3']:
-                result['gloves'] = findEquipment(match['equipment']['3'])
-            if match['equipment']['4']:
-                result['boots'] = findEquipment(match['equipment']['4'])
-            if match['equipment']['5']:
-                result['accessory'] = findEquipment(match['equipment']['5'])
-
-            result['skillNames'] = findSkillName(skills)
-
-            if len(skills) > 0:
-                result['passiveSkillLevel'] = match['skillLevelInfo'][skills[0]]
-            if len(skills) > 1:
-                result['skillOneLevel'] = match['skillLevelInfo'][skills[1]]
-            if len(skills) > 2:
-                result['skillTwoLevel'] = match['skillLevelInfo'][skills[2]]
-            if len(skills) > 3:
-                result['skillThreeLevel'] = match['skillLevelInfo'][skills[3]]
-            if len(skills) > 4:
-                result['skillFourLevel'] = match['skillLevelInfo'][skills[4]]
-            if len(skills) > 5:
-                result['weaponSkillLevel'] = match['skillLevelInfo'][skills[5]]
-
-            result['skillLevelOrder'] = parseSkillOrder(match['skillOrderInfo'], result['skillNames'], skills, result['level'])
             result['maxHp'] = match['maxHp']
             result['maxSp'] = match['maxSp']
             result["attackPower"] = match['attackPower']
@@ -118,19 +86,75 @@ async def findGameStats(matchHistory: dict, gameId: str):
             result["coolDownReduction"] = match['coolDownReduction']
             result["lifeSteal"] = match['lifeSteal']
 
-            return result
-        else:
-            return ''
+            result['mode'] = gameModeSwitch(match['matchingTeamMode'])
+            result['masteryLevels'] = parseMastery(match['masteryLevel'])
+            
+            if '0' in match['equipment']:
+                result['weapon'] = findEquipment(match['equipment']['0'], True)
+            else: 
+                result['weapon'] = 'N/A'
+            if '1' in match['equipment']:
+                result['chest'] = findEquipment(match['equipment']['1'])
+            else: 
+                result['chest'] = 'N/A'
+            if '2' in match['equipment']:
+                result['head'] = findEquipment(match['equipment']['2'])
+            else: 
+                result['head'] = 'N/A'
+            if '3' in match['equipment']:
+                result['gloves'] = findEquipment(match['equipment']['3'])
+            else: 
+                result['gloves'] = 'N/A'
+            if '4' in match['equipment']:
+                result['boots'] = findEquipment(match['equipment']['4'])
+            else: 
+                result['boots'] = 'N/A'
+            if '5' in match['equipment']:
+                result['accessory'] = findEquipment(match['equipment']['5'])
+            else: 
+                result['accessory'] = 'N/A'
 
-def findSkillName(skillCode: []):
+            result['skillNames'] = findSkillNames(result['character'], skills)
+            result['skillLevels'] = match['skillLevelInfo']
+
+            result['skillLevelOrder'] = parseSkillOrder(match['skillOrderInfo'], result['skillNames'], list(skills.keys()), result['level'])
+
+
+            return result
+    return ''
+
+def findSkillNames(characterName: str, skills: []):
     with open(os.path.join(__location__, '..\\resources\\lookup\\skillgroups.json'), encoding='utf-8') as b:
         groups = json.load(b)
-    result = []
-    for code in skillCode:
-        for skill in groups['data']:
-            if skill['group'] == int(code):
-                result.append(skill['name'])
-                break
+    result = {}
+    for skill in groups['data']:
+        id:str = skill['skillId']
+        passiveId:str = skill['passiveSkillId']
+        if characterName in id:
+            if 'Active1' in id:
+                # result['Q'] = skill['name']
+                result[skill['representGroup']] = 'Q'
+                continue
+            elif 'Active2' in id:
+                # result['Q'] = skill['name']
+                result[skill['representGroup']] = 'W'
+                continue
+            elif 'Active3' in id:
+                # result['Q'] = skill['name']
+                result[skill['representGroup']] = 'E'
+                continue
+            elif 'Active4' in id:
+                # result['Q'] = skill['name']
+                result[skill['representGroup']] = 'R'
+                continue
+        elif characterName in passiveId:
+                # result['P'] = skill['name']
+                result[skill['representGroup']] = 'P'
+                continue
+    values = list(result.keys())
+    for skill in skills:
+        if not values.__contains__(int(skill)):
+            result[int(skill)] = 'D'
     return result
 
 def findCharacter(charNum: int):
@@ -170,17 +194,19 @@ def parseMastery(masteryLevels: dict):
                 break
     return result
 
-def parseSkillOrder(skillLevels: dict, skillNames:[], skills: [], levels: int):
-    table = {}
+def parseSkillOrder(skillLevels: dict, skillNames:{}, skills: [], levels: int):
+    table = {"L":'|'}
+    indices = list(skillNames.values())
     for x in range(len(skillNames)):
-        table[skillNames[x]] = ""
+        table[indices[x]] = "|"
     i = 1
     while(i <= levels):
+        table["L"] = table["L"] + f"{i%10}|"
         for x in range(len(skills)):
             if skillLevels[str(i)] == int(skills[x]):
-                table[skillNames[x]] = table[skillNames[x]] + '[X] '
+                table[skillNames[int(skills[x])]] = table[skillNames[int(skills[x])]] + 'X|'
             else:
-                table[skillNames[x]] = table[skillNames[x]] + '[ ] '
+                table[skillNames[int(skills[x])]] = table[skillNames[int(skills[x])]] + ' |'
         i+=1
     for row in table:
         table[row] = table[row] + '\n'

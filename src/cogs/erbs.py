@@ -138,46 +138,48 @@ class ERBSCommands(commands.Cog):
             else:
               print(f"NextId: {history['next']}")
               history = await getMatchHistory(baseUrl=BASE_URL, userId=user['userNum'], apiKey=API_KEY, nextId=history['next'])
+              continue
           else:
             embeds:list = []
-            page0 = [("Game ID", match['id'], False),
-                      ("Character", match['character'], True),
-                      ("Ranked", match['placement'], True),
-                      ("Game Mode", match['mode'], True),                    
-                      ("Kills", match['kills'], True),
-                      ("Assists", match['assists'], True),
-                      ("Hunts", match['hunts'], True),
-                      ("Max HP", match['maxHp'], True),
-                      ("Max SP", match['maxSp'], True),
-                      ("Attack Power", match['attackPower'], True),
-                      ("Defense", match['defense'], True),
-                      ("HP Regen", match['hpRegen'], True),
-                      ("SP Regen", match['spRegen'], True),
-                      ("Attack Speed", match['attackSpeed'], True),
-                      ("Move Speed", match['moveSpeed'], True),
-                      ("Sight Range", match['sightRange'], True),
-                      ("Attack Range", match['attackRange'], True),
-                      ("Critical Chance", match['criticalStrikeChance'], True),
-                      ("Critical Damage", match['criticalStrikeDamage'], True),
-                      ("Cooldown Reduction", match['coolDownReduction'], True),
-                      ("LifeSteal", match['lifeSteal'], True)]
+            page0 = [("Game ID", f"```{match['id']}```", False),
+                      ("Character", f"```{match['character']}```", True),
+                      ("Ranked", f"```{match['placement']}```", True),
+                      ("Game Mode", f"```{match['mode']}```", True),                    
+                      ("Kills", f"```{match['kills']}```", True),
+                      ("Assists", f"```{match['assists']}```", True),
+                      ("Hunts", f"```{match['hunts']}```", True),
+                      ("Max HP", f"```{match['maxHp']}```", True),
+                      ("Max SP", f"```{match['maxSp']}```", True),
+                      ("Attack Power", f"```{match['attackPower']}```", True),
+                      ("Defense", f"```{match['defense']}```", True),
+                      ("HP Regen", f"```{match['hpRegen']}```", True),
+                      ("SP Regen", f"```{match['spRegen']}```", True),
+                      ("Attack Speed", f"```{match['attackSpeed']}```", True),
+                      ("Move Speed", f"```{match['moveSpeed']}```", True),
+                      ("Sight Range", f"```{match['sightRange']}```", True),
+                      ("Attack Range", f"```{match['attackRange']}```", True),
+                      ("Critical Chance", f"```{match['criticalStrikeChance']}```", True),
+                      ("Critical Damage", f"```{match['criticalStrikeDamage']}```", True),
+                      ("Cooldown Reduction", f"```{match['coolDownReduction']}```", True),
+                      ("LifeSteal", f"```{match['lifeSteal']}```", True)]
           skills = ""
           for skill in match['skillLevelOrder']:
-            skills = skills + f"{skill}: " + match['skillLevelOrder'][skill]
+            skills = skills + f"{skill}: {match['skillLevelOrder'][skill]}"
 
           mastery = ""
           for masteryCode in match['masteryLevels']:
-            mastery = mastery + f"{masteryCode}: " + f"{match['masteryLevels'][masteryCode]}\n" 
+            mastery = mastery + f"```{masteryCode}: {match['masteryLevels'][masteryCode]}```"
+            
 
-          page1 = [("Level", match['level'], False),
-                    ("Mastery", mastery, False),
-                    ("Skill Order", skills, False),
-                    ("Weapon", match['weapon'], True),
-                    ("Chest", match['chest'], True),
-                    ("Head", match['head'], True),
-                    ("Gloves", match['gloves'], True),
-                    ("Boots", match['boots'], True),
-                    ("Accessory", match['accessory'], True)]
+          page1 = [("Level", f"```{match['level']}```", False),
+                    ("Mastery", f"{mastery}", False),
+                    ("Skill Order", f"```{skills}```", False),
+                    ("Weapon", f"```{match['weapon']}```", True),
+                    ("Chest", f"```{match['chest']}```", True),
+                    ("Head", f"```{match['head']}```", True),
+                    ("Gloves", f"```{match['gloves']}```", True),
+                    ("Boots", f"```{match['boots']}```", True),
+                    ("Accessory", f"```{match['accessory']}```", True)]
 
           embeds.append(discord.Embed())
           for name, value, inline in page0:
@@ -190,7 +192,7 @@ class ERBSCommands(commands.Cog):
           for x in range(len(embeds)):
             embeds[x].set_thumbnail(url=getThumbnailUrl())
 
-          paginator = Pagination.AutoEmbedPaginator(ctx, after=30)
+          paginator = Pagination.AutoEmbedPaginator(ctx, delete_after=5)
           await paginator.run(embeds)
           return
       else:
@@ -198,8 +200,8 @@ class ERBSCommands(commands.Cog):
         matchHistory = history["userGames"]
         for match in matchHistory:
           embeds.append(discord.Embed().add_field(name="getMatchHistory", value=
-          (f"Game: {match['gameId']}\nGame Mode: {gameModeSwitch(match['matchingMode'])}\nLevel: {match['characterLevel']}\nRanked: {match['gameRank']}\nKills: {match['playerKill']}\nAssists: {match['playerAssistant']}\nHunt: {match['monsterKill']}"), inline=False))
-        paginator = Pagination.AutoEmbedPaginator(ctx)
+          (f"Game: {match['gameId']}\nGame Mode: {gameModeSwitch(match['matchingTeamMode'])}\nLevel: {match['characterLevel']}\nRanked: {match['gameRank']}\nKills: {match['playerKill']}\nAssists: {match['playerAssistant']}\nHunt: {match['monsterKill']}"), inline=False))
+        paginator = Pagination.AutoEmbedPaginator(ctx, delete_after=5)
         await paginator.run(embeds)
         
       
