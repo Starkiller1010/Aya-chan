@@ -52,7 +52,7 @@ async def getMatchHistory(baseUrl:str, userId: str, apiKey: str, nextId: str = '
     else:
         return ''
 
-async def findGameStats(matchHistory: dict, gameId: str):
+async def findGameStats(matchHistory: dict, gameId: int):
     """Helper function for getUsersMatchStats that collects stats from Match History"""
     # url = 'https://open-api.bser.io/v1/data/'
     #TODO Need to dynamically create/update jsons being used
@@ -60,7 +60,7 @@ async def findGameStats(matchHistory: dict, gameId: str):
     #     matchHistory = json.load(testJson)
     for match in matchHistory['userGames']:
         result = {}
-        if match['gameId'] == int(gameId):
+        if match['gameId'] == gameId:
             skills = match['skillLevelInfo']
 
             result['character'] = findCharacter(match['characterNum'])

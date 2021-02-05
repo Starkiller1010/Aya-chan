@@ -129,9 +129,9 @@ class ERBSCommands(commands.Cog):
         return
       elif gameId:
         while(True):
-          match = await findGameStats(matchHistory=history, gameId=gameId)
+          match = await findGameStats(matchHistory=history, gameId=gameId[0])
           if not match:
-            if not history['next']:
+            if not 'next' in history:
               embedVar.add_field(name="getMatchHistory", value=f"No game with that id was found for this user.", inline=False)
               await ctx.send(embed=embedVar)
               return
