@@ -2,7 +2,7 @@ import os
 
 import discord
 from discord.ext import commands
-from discord.ext.commands import ConversionError
+from discord.ext.commands import ConversionError, Greedy
 from DiscordUtils import Pagination
 from ..logger import logInfo, logErr
 from ..bot import getEmbedVar, getThumbnailUrl
@@ -102,7 +102,7 @@ class ERBSCommands(commands.Cog):
       await ctx.send(embed=embedVar)
 
     @commands.command(name="getMatchHistory", brief="User's Match History")
-    async def getMatchHistory(self, ctx, nickname: str = '', gameId: str = ''):
+    async def getMatchHistory(self, ctx, gameId: Greedy[int] = None, nickname: str = ''):
       """Gets the author's match history in a specific game mode. 
       If no nickname passed, uses linked account assigned to user.
       If a gameId is passed in, will user's stats for that game."""
@@ -136,7 +136,6 @@ class ERBSCommands(commands.Cog):
               await ctx.send(embed=embedVar)
               return
             else:
-              print(f"NextId: {history['next']}")
               history = await getMatchHistory(baseUrl=BASE_URL, userId=user['userNum'], apiKey=API_KEY, nextId=history['next'])
               continue
           else:
