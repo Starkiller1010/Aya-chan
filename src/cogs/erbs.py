@@ -191,19 +191,32 @@ class ERBSCommands(commands.Cog):
           for x in range(len(embeds)):
             embeds[x].set_thumbnail(url=getThumbnailUrl())
 
-          paginator = Pagination.AutoEmbedPaginator(ctx, delete_after=5)
+          paginator = Pagination.AutoEmbedPaginator(ctx)
           await paginator.run(embeds)
           return
       else:
         embeds:list = []
-        matchHistory = history["userGames"]
-        for match in matchHistory:
-          embeds.append(discord.Embed().add_field(name="getMatchHistory", value=
-          (f"Game: {match['gameId']}\nGame Mode: {gameModeSwitch(match['matchingTeamMode'])}\nLevel: {match['characterLevel']}\nRanked: {match['gameRank']}\nKills: {match['playerKill']}\nAssists: {match['playerAssistant']}\nHunt: {match['monsterKill']}"), inline=False))
-        paginator = Pagination.AutoEmbedPaginator(ctx, delete_after=5)
+        while True:
+          matchHistory = history["userGames"]
+          for match in matchHistory:
+            fields = [("Game: ", f"```{match['gameId']}```", False),
+                      ("Mode: ", f"```{gameModeSwitch(match['matchingTeamMode'])}```", False),
+                      ("Level: ", f"```{match['characterLevel']}```", False),
+                      ("Placement: ", f"```{match['gameRank']}```", False),
+                      ("Kills: ", f"```{match['playerKill']}```", False),
+                      ("Assists: ", f"```{match['playerAssistant']}```", False),
+                      ("Hunts: ", f"```{match['monsterKill']}```", False)]
+            embeds.append(discord.Embed())
+            for name, value, inline in fields:
+              embeds[len(embeds) - 1].add_field(name=name, value=value, inline=inline)
+          for x in range(len(embeds)):
+              embeds[x].set_thumbnail(url=getThumbnailUrl())
+          if 'next' in history:
+            history = await getMatchHistory(baseUrl=BASE_URL, userId=user['userNum'], apiKey=API_KEY, nextId=history['next'])
+          else:
+            break
+        paginator = Pagination.AutoEmbedPaginator(ctx)
         await paginator.run(embeds)
-        
-      
       
 
 ##################################################
