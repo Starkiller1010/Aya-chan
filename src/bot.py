@@ -21,7 +21,7 @@ BOT_IMAGE = os.getenv('IMAGE_URL')
 intent = discord.Intents.default()
 intent.members = True
 
-bot = commands.AutoShardedBot(command_prefix='>', description="ERBS API bot", intent=intent)
+bot = commands.AutoShardedBot(command_prefix='>', description="ERBS API bot", intent=intent, case_insensitive=True)
 startup_extensions = ["src.cogs.erbs", "src.cogs.admin", "src.cogs.db_admin", "src.cogs.basic"]
 
 embedVar = discord.Embed(color=0x00ff00)
@@ -71,13 +71,16 @@ async def on_ready():
     print('-----------------------------------------------------')
     logInfo(f'{bot.user.name} online')
 
-#Override of default on_message. Clears embedVar before sending message to channel
+#Override of default on_message.
 @bot.event
 async def on_message(message):
-    """Listener to on_message event"""  
-    embedVar.clear_fields()
-    embedVar.set_thumbnail(url=BOT_IMAGE)
-    await bot.process_commands(message)
+    """Listener to on_message event"""
+    ctx = await bot.get_context(message)
+    if ctx.prefix is not None:
+        ctx.command = bot.all_commands.get(ctx.invoked_with.lower())
+        embedVar.clear_fields()
+        embedVar.set_thumbnail(url=BOT_IMAGE)
+        await bot.process_commands(message) 
 
 
 @bot.event
@@ -95,6 +98,7 @@ async def on_command_error(ctx, error):
 async def on_guild_join(guild):
     sys_channel = guild.system_channel
     embedVar.add_field(name="Hello!",value="My name is Aya-chan. I'll help you talk to ERBS and do moderation commands. Use >help if you want to see what I can do.")
+    embedVar.add_field(value="If you would like to get information on announcements or future add-ons, please join our discord: https://discord.gg/4z5r435juz")
     if sys_channel:
         await sys_channel.send(embed=embedVar)
     else:

@@ -25,7 +25,7 @@ class ERBSCommands(commands.Cog):
 
     @commands.command(name="linkAccount", brief="Links ERBS Account")
     async def linkERBSUserName(self, ctx, erbsUserName: str):
-      """Links user to an ERBS account's username. Case-sensitive."""
+      """Links user to an ERBS account's username."""
       valid = await getUser(baseUrl=BASE_URL, nickname=erbsUserName, apiKey=API_KEY)
       if not valid:
         embedVar.add_field(name="linkERBSAccount", value=f"Username '{erbsUserName}' does not exist in ERBS.", inline=False)
