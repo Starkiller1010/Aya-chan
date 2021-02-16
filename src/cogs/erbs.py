@@ -9,7 +9,7 @@ from ..bot import getEmbedVar, getThumbnailUrl
 from ..services.database_service import (getAccountName, linkAccount,
                                          unlinkAccount)
 from ..services.erbs_service import (gameModeSwitch, getLeaderboard, getUser,
-                                     getUserRank, getMatchHistory, findGameStats)
+                                     getUserRank, getMatchHistory, findGameStats, findItem)
 
 API_KEY = os.getenv('ERBS_API_KEY')
 BASE_URL = os.getenv('ERBS_URL')
@@ -217,6 +217,17 @@ class ERBSCommands(commands.Cog):
             break
         paginator = Pagination.AutoEmbedPaginator(ctx)
         await paginator.run(embeds)
+
+
+    @commands.command(name='getItem', brief='Item build and description')
+    async def getItemTree(self, ctx, *, itemName: str):
+      item = await findItem(itemName)
+      fields = [("Name: ", f"```{item['name']}```", False),
+                ("Type: ", f"```{item['itemType']}```", False),
+                ("Rarity: ", f"```{item['itemGrade']}```", False)]
+      for name, value, inline in fields:
+            embedVar.add_field(name=name, value=value, inline=inline)
+      await ctx.send(embed=embedVar, delete_after=15)
       
 
 ##################################################

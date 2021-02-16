@@ -90,27 +90,27 @@ async def findGameStats(matchHistory: dict, gameId: int):
             result['masteryLevels'] = parseMastery(match['masteryLevel'])
             
             if '0' in match['equipment']:
-                result['weapon'] = findEquipment(match['equipment']['0'], True)
+                result['weapon'] = findEquipmentName(match['equipment']['0'], True)
             else: 
                 result['weapon'] = 'N/A'
             if '1' in match['equipment']:
-                result['chest'] = findEquipment(match['equipment']['1'])
+                result['chest'] = findEquipmentName(match['equipment']['1'])
             else: 
                 result['chest'] = 'N/A'
             if '2' in match['equipment']:
-                result['head'] = findEquipment(match['equipment']['2'])
+                result['head'] = findEquipmentName(match['equipment']['2'])
             else: 
                 result['head'] = 'N/A'
             if '3' in match['equipment']:
-                result['gloves'] = findEquipment(match['equipment']['3'])
+                result['gloves'] = findEquipmentName(match['equipment']['3'])
             else: 
                 result['gloves'] = 'N/A'
             if '4' in match['equipment']:
-                result['boots'] = findEquipment(match['equipment']['4'])
+                result['boots'] = findEquipmentName(match['equipment']['4'])
             else: 
                 result['boots'] = 'N/A'
             if '5' in match['equipment']:
-                result['accessory'] = findEquipment(match['equipment']['5'])
+                result['accessory'] = findEquipmentName(match['equipment']['5'])
             else: 
                 result['accessory'] = 'N/A'
 
@@ -122,6 +122,18 @@ async def findGameStats(matchHistory: dict, gameId: int):
 
             return result
     return ''
+
+async def findItem(itemName: str):
+    code = findItemCode(item=itemName)
+    item = []
+    if code:
+        item = findEquipment(code[0], True)
+        if not item:
+            item = findEquipment(code[0])
+        if not item:
+            item = findMiscItem(code=code[0])
+        item['name'] = code[1]
+    return item
 
 def findSkillNames(characterName: str, skills: []):
     with open(os.path.join(__location__, '../resources/lookup/skillgroups.json'), encoding='utf-8') as b:
@@ -165,7 +177,7 @@ def findCharacter(charNum: int):
             return character['name']
     return str(charNum)
 
-def findEquipment(code: int, isWeapon: bool = False):
+def findEquipmentName(code: int, isWeapon: bool = False):
     with open(os.path.join(__location__, '../resources/lookup/itemNames.json'), encoding='utf-8') as a:
         inv_names = json.load(a)
         names = {v: k for k, v in inv_names.items()}
@@ -182,6 +194,43 @@ def findEquipment(code: int, isWeapon: bool = False):
             else:
                 return equipment['name']
     return str(code)
+
+def findEquipment(code: int, isWeapon: bool = False):
+    if not isWeapon:
+        with open(os.path.join(__location__, '../resources/lookup/armors.json'), encoding='utf-8') as b:
+            equipments = json.load(b)
+    else:
+        with open(os.path.join(__location__, '../resources/lookup/weapons.json'), encoding='utf-8') as c:
+            equipments = json.load(c)
+    for equipment in equipments['data']:
+        if equipment['code'] == code:
+            return equipment
+    return str(code)
+
+def findMiscItem(code: int):
+    with open(os.path.join(__location__, '../resources/lookup/miscItems.json'), encoding='utf-8') as a:
+            items = json.load(a)
+    for item in items:
+        if item['code'] == code:
+            return item
+    return str(code)
+
+def findItemCode(item: str):
+    nonFormattedName = item.split(' ')
+    name = ''
+    print(nonFormattedName)
+    if len(nonFormattedName) > 1:
+        for part in nonFormattedName:
+            name = name.__add__(part.capitalize())
+    else:
+        name = nonFormattedName[0]
+    with open(os.path.join(__location__, '../resources/lookup/itemNames.json'), encoding='utf-8') as a:
+        inv_names = json.load(a)
+    print(name)
+    if name in inv_names:
+        return [inv_names[name], name]
+    else:
+        return name
                 
 def parseMastery(masteryLevels: dict):
     with open(os.path.join(__location__, '../resources/lookup/masteryCodes.json'), encoding='utf-8') as a:
@@ -242,5 +291,3 @@ def gameModeSwitch(mode: any):
         "3": 'Squads'
         }
         return switcher.get(modeName, '')
-
-    
