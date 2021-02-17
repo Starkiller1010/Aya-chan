@@ -9,7 +9,7 @@ from ..bot import getEmbedVar, getThumbnailUrl
 from ..services.database_service import (getAccountName, linkAccount,
                                          unlinkAccount)
 from ..services.erbs_service import (gameModeSwitch, getLeaderboard, getUser,
-                                     getUserRank, getMatchHistory, findGameStats, findItem)
+                                     getUserRank, getMatchHistory, findGameStats, findItem, parseItem)
 
 API_KEY = os.getenv('ERBS_API_KEY')
 BASE_URL = os.getenv('ERBS_URL')
@@ -221,12 +221,11 @@ class ERBSCommands(commands.Cog):
     @commands.command(name='getItem', brief='Item build and description')
     async def getItemTree(self, ctx, *, itemName: str):
       item = await findItem(itemName)
-      fields = [("Name: ", f"```{item['name']}```", False),
-                ("Type: ", f"```{item['itemType']}```", False),
-                ("Rarity: ", f"```{item['itemGrade']}```", False)]
+      print(item)
+      fields = parseItem(item)
       for name, value, inline in fields:
             embedVar.add_field(name=name, value=value, inline=inline)
-      await ctx.send(embed=embedVar, delete_after=15)
+      await ctx.send(embed=embedVar, delete_after=30)
       
 
 ##################################################
@@ -259,7 +258,6 @@ class ERBSCommands(commands.Cog):
       else:
           raise error
 
-
     @getMyCurrentRank.error
     async def getRank_error(self, ctx, error):
       """Error handling for getRank"""
@@ -272,6 +270,21 @@ class ERBSCommands(commands.Cog):
           await ctx.send(embed=embedVar)
       else:
           raise error
+
+    @getItemTree.error
+    async def getItem_error(self, ctx, error):
+      """Error handling for getRank"""
+      logErr(f'Error within getRank: {error}')
+      if isinstance(error, (ConversionError, commands.BadArgument)):
+          embedVar.add_field(name="getItemTree", value=f"You have given an invalid argument. Please pass in an item name", inline=False)
+          await ctx.send(embed=embedVar)
+      elif isinstance(error, commands.MissingRequiredArgument):
+          embedVar.add_field(name="getItemTree", value=f"Please insert an item name.", inline=False)
+          await ctx.send(embed=embedVar)
+      else:
+          raise error
+
+    
 ###################################
 # Link
 def setup(bot):
