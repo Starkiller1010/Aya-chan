@@ -205,12 +205,12 @@ def findEquipment(code: int, isWeapon: bool = False):
     for equipment in equipments['data']:
         if equipment['code'] == code:
             return equipment
-    return str(code)
+    return []
 
 def findMiscItem(code: int):
     with open(os.path.join(__location__, '../resources/lookup/miscItems.json'), encoding='utf-8') as a:
             items = json.load(a)
-    for item in items:
+    for item in items['data']:
         if item['code'] == code:
             return item
     return str(code)
@@ -218,7 +218,6 @@ def findMiscItem(code: int):
 def findItemCode(item: str):
     nonFormattedName = item.split(' ')
     name = ''
-    print(nonFormattedName)
     if len(nonFormattedName) > 1:
         for part in nonFormattedName:
             name = name.__add__(part.capitalize())
@@ -226,7 +225,6 @@ def findItemCode(item: str):
         name = nonFormattedName[0]
     with open(os.path.join(__location__, '../resources/lookup/itemNames.json'), encoding='utf-8') as a:
         inv_names = json.load(a)
-    print(name)
     if name in inv_names:
         return [inv_names[name], name]
     else:
@@ -269,6 +267,70 @@ def parseLeaderboard(data: list):
     for player in data:
         temp.append(f"Rank {player['rank']}: {player['nickname']}\n")
     return temp
+
+def parseItem(item: dict):
+    if item['itemType'] == 'Weapon':
+        return [("Name: ", f"```{item['name']}```", False),
+                ("Type: ", f"```{item['itemType']}```", True),
+                ("Rarity: ", f"```{item['itemGrade']}```", True),
+                ("Category: ", f"```{item['weaponType']}```", True),
+                ("Atk Power: ", f"```{item['attackPower']}```", True),
+                ("Defense: ", f"```{item['defense']}```", True),
+                ("Max Hp: ", f"```{item['maxHp']}```", True),
+                ("HP Regen: ", f"```{item['hpRegen']}```", True),
+                ("SP Regen: ", f"```{item['spRegen']}```", True),
+                ("HP Regen %: ", f"```{item['hpRegenRatio']}```", True),
+                ("SP Regen %: ", f"```{item['spRegenRatio']}```", True),
+                ("Attack Speed %: ", f"```{item['attackSpeedRatio']}```", True),
+                ("Crit Chance: ", f"```{item['criticalStrikeChance']}```", True),
+                ("Crit Damage: ", f"```{item['criticalStrikeDamage']}```", True),
+                ("Cooldown Reduction: ", f"```{item['cooldownReduction']}```", True),
+                ("Life Steal: ", f"```{item['lifeSteal']}```", True),
+                ("Move Speed: ", f"```{item['moveSpeed']}```", True),
+                ("Sight Range: ", f"```{item['sightRange']}```", True),
+                ("Attack Range: ", f"```{item['attackRange']}```", True),
+                ("ENAD: ", f"```{item['increaseBasicAttackDamage']}```", True),
+                ("Skill Damage: ", f"```{item['increaseSkillDamage']}```", True),
+                ("Skill Damage %: ", f"```{item['increaseSkillDamageRatio']}```", True),
+                ("Healing Reduction(Attack): ", f"```{item['decreaseRecoveryToBasicAttack']}```", True),
+                ("Healing Reduction(Spell): ", f"```{item['decreaseRecoveryToSkill']}```", True)]
+    elif item['itemType'] == 'Armor':
+        return [("Name: ", f"```{item['name']}```", False),
+                ("Type: ", f"```{item['itemType']}```", True),
+                ("Rarity: ", f"```{item['itemGrade']}```", True),
+                ("Category: ", f"```{item['armorType']}```", True),
+                ("Atk Power: ", f"```{item['attackPower']}```", True),
+                ("Defense: ", f"```{item['defense']}```", True),
+                ("Max Hp: ", f"```{item['maxHp']}```", True),
+                ("HP Regen: ", f"```{item['hpRegen']}```", True),
+                ("SP Regen: ", f"```{item['spRegen']}```", True),
+                ("HP Regen %: ", f"```{item['hpRegenRatio']}```", True),
+                ("SP Regen %: ", f"```{item['spRegenRatio']}```", True),
+                ("Attack Speed %: ", f"```{item['attackSpeedRatio']}```", True),
+                ("Crit Chance: ", f"```{item['criticalStrikeChance']}```", True),
+                ("Crit Damage: ", f"```{item['criticalStrikeDamage']}```", True),
+                ("Cooldown Reduction: ", f"```{item['cooldownReduction']}```", True),
+                ("Life Steal: ", f"```{item['lifeSteal']}```", True),
+                ("Move Speed: ", f"```{item['moveSpeed']}```", True),
+                ("Move Speed(Out of Combat): ", f"```{item['outOfCombatMoveSpeed']}```", True),
+                ("Sight Range: ", f"```{item['sightRange']}```", True),
+                ("Attack Range: ", f"```{item['attackRange']}```", True),
+                ("ENAD: ", f"```{item['increaseBasicAttackDamage']}```", True),
+                ("Skill Damage: ", f"```{item['increaseSkillDamage']}```", True),
+                ("Skill Damage %: ", f"```{item['increaseSkillDamageRatio']}```", True),
+                ("Healing Reduction(Attack): ", f"```{item['decreaseRecoveryToBasicAttack']}```", True),
+                ("Healing Reduction(Spell): ", f"```{item['decreaseRecoveryToSkill']}```", True),
+                ("Crit Damage Reduction", f"```{item['preventCriticalStrikeDamaged']}```", True),
+                ("Attack Reduction: ", f"```{item['preventBasicAttackDamaged']}```", True),
+                ("Spell Reduction: ", f"```{item['preventSkillDamagedRatio']}```", True)]
+    elif item['itemType'] == 'Misc':
+        return [("Name: ", f"```{item['name']}```", False),
+                ("Type: ", f"```{item['itemType']}```", True),
+                ("Rarity: ", f"```{item['itemGrade']}```", True),
+                ("Stack Size: ", f"```{item['stackable']}```", True),
+                ("Pick-up Amount: ", f"```{item['initialCount']}```", True)]
+    else:
+        return []
 
 def gameModeSwitch(mode: any):
     """"General Helper function that takes in a string and matches it to a number if in the switch"""
