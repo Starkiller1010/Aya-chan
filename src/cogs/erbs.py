@@ -9,7 +9,7 @@ from ..bot import getEmbedVar, getThumbnailUrl
 from ..services.database_service import (getAccountName, linkAccount,
                                          unlinkAccount)
 from ..services.erbs_service import (gameModeSwitch, getLeaderboard, getUser,
-                                     getUserRank, getMatchHistory, findGameStats, findItem, parseItem)
+                                     getUserRank, getMatchHistory, findGameStats, findItem, parseItem, parseBuildTree)
 
 API_KEY = os.getenv('ERBS_API_KEY')
 BASE_URL = os.getenv('ERBS_URL')
@@ -221,11 +221,50 @@ class ERBSCommands(commands.Cog):
     @commands.command(name='getItem', brief='Item build and description')
     async def getItemTree(self, ctx, *, itemName: str):
       item = await findItem(itemName)
-      print(item)
       fields = parseItem(item)
+      embeds:list = []
+      tree: dict = {}
+      embed = discord.Embed()
+      if 'makeMaterial1' in item and item['makeMaterial1']:
+        parseBuildTree(item['makeMaterial1'], item['makeMaterial2'], item['name'], tree)
+        fields.append(("Builds From: ", f"```{tree[item['name']][0]} + {tree[item['name']][1]}```", True))
+        print(tree)
+      i = 0
       for name, value, inline in fields:
-            embedVar.add_field(name=name, value=value, inline=inline)
-      await ctx.send(embed=embedVar, delete_after=30)
+            if i < 25:
+              embed.add_field(name=name, value=value, inline=inline)
+              i += 1
+            else:
+              i = 0
+              embeds.append(embed)
+              embed = discord.Embed()
+              embed.add_field(name=name, value=value, inline=inline)
+      embeds.append(embed)
+      if tree:
+        for node in tree:
+          print(tree[node])
+          if item['name'] == node:
+            continue
+          else:
+            embed = discord.Embed()
+            item = await findItem(node)
+            fields:list = parseItem(item)
+            fields.append(("Builds From: ", f"```{tree[node][0]} + {tree[node][1]}```", True))
+            i = 0
+            for name, value, inline in fields:
+              if i < 25:
+                embed.add_field(name=name, value=value, inline=inline)
+                i += 1
+              else:
+                i = 0
+                embeds.append(embed)
+                embed = discord.Embed()
+                embed.add_field(name=name, value=value, inline=inline)
+            embeds.append(embed)
+        for x in range(len(embeds)):
+          embeds[x].set_thumbnail(url=getThumbnailUrl())
+      paginator = Pagination.AutoEmbedPaginator(ctx)
+      await paginator.run(embeds)
       
 
 ##################################################
