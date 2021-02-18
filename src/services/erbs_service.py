@@ -90,27 +90,27 @@ async def findGameStats(matchHistory: dict, gameId: int):
             result['masteryLevels'] = parseMastery(match['masteryLevel'])
             
             if '0' in match['equipment']:
-                result['weapon'] = findEquipmentName(match['equipment']['0'], True)
+                result['weapon'] = findItemName(match['equipment']['0'], True)
             else: 
                 result['weapon'] = 'N/A'
             if '1' in match['equipment']:
-                result['chest'] = findEquipmentName(match['equipment']['1'])
+                result['chest'] = findItemName(match['equipment']['1'])
             else: 
                 result['chest'] = 'N/A'
             if '2' in match['equipment']:
-                result['head'] = findEquipmentName(match['equipment']['2'])
+                result['head'] = findItemName(match['equipment']['2'])
             else: 
                 result['head'] = 'N/A'
             if '3' in match['equipment']:
-                result['gloves'] = findEquipmentName(match['equipment']['3'])
+                result['gloves'] = findItemName(match['equipment']['3'])
             else: 
                 result['gloves'] = 'N/A'
             if '4' in match['equipment']:
-                result['boots'] = findEquipmentName(match['equipment']['4'])
+                result['boots'] = findItemName(match['equipment']['4'])
             else: 
                 result['boots'] = 'N/A'
             if '5' in match['equipment']:
-                result['accessory'] = findEquipmentName(match['equipment']['5'])
+                result['accessory'] = findItemName(match['equipment']['5'])
             else: 
                 result['accessory'] = 'N/A'
 
@@ -132,6 +132,8 @@ async def findItem(itemName: str):
             item = findEquipment(code[0])
         if not item:
             item = findMiscItem(code=code[0])
+        if not item:
+            item = findConsumable(code[0])
         item['name'] = code[1]
     return item
 
@@ -177,22 +179,28 @@ def findCharacter(charNum: int):
             return character['name']
     return str(charNum)
 
-def findEquipmentName(code: int, isWeapon: bool = False):
+def findItemName(code: int, isWeapon: bool = False, isMisc: bool = False, isConsumable: bool = False):
     with open(os.path.join(__location__, '../resources/lookup/itemNames.json'), encoding='utf-8') as a:
         inv_names = json.load(a)
         names = {v: k for k, v in inv_names.items()}
-    if not isWeapon:
-        with open(os.path.join(__location__, '../resources/lookup/armors.json'), encoding='utf-8') as b:
-            equipments = json.load(b)
-    else:
+    if isWeapon:
         with open(os.path.join(__location__, '../resources/lookup/weapons.json'), encoding='utf-8') as c:
-            equipments = json.load(c)
-    for equipment in equipments['data']:
-        if equipment['code'] == code:
-            if names[code]:
+            items = json.load(c)
+    elif isMisc:
+        with open(os.path.join(__location__, '../resources/lookup/miscItems.json'), encoding='utf-8') as d:
+            items = json.load(d)
+    elif isConsumable:
+         with open(os.path.join(__location__, '../resources/lookup/consumables.json'), encoding='utf-8') as e:
+            items = json.load(e)
+    else:
+        with open(os.path.join(__location__, '../resources/lookup/armors.json'), encoding='utf-8') as b:
+            items = json.load(b)
+    for item in items['data']:
+        if item['code'] == code:
+            if code in names:
                 return names[code]
             else:
-                return equipment['name']
+                return item['name']
     return str(code)
 
 def findEquipment(code: int, isWeapon: bool = False):
