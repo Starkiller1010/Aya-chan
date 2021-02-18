@@ -221,7 +221,15 @@ def findMiscItem(code: int):
     for item in items['data']:
         if item['code'] == code:
             return item
-    return str(code)
+    return []
+
+def findConsumable(code: int):
+    with open(os.path.join(__location__, '../resources/lookup/consumables.json'), encoding='utf-8') as a:
+            items = json.load(a)
+    for item in items['data']:
+        if item['code'] == code:
+            return item
+    return []
 
 def findItemCode(item: str):
     nonFormattedName = item.split(' ')
@@ -232,11 +240,11 @@ def findItemCode(item: str):
     else:
         name = nonFormattedName[0]
     with open(os.path.join(__location__, '../resources/lookup/itemNames.json'), encoding='utf-8') as a:
-        inv_names = json.load(a)
+        inv_names: dict = json.load(a)
     if name in inv_names:
         return [inv_names[name], name]
     else:
-        return name
+        return ''
                 
 def parseMastery(masteryLevels: dict):
     with open(os.path.join(__location__, '../resources/lookup/masteryCodes.json'), encoding='utf-8') as a:
@@ -277,8 +285,9 @@ def parseLeaderboard(data: list):
     return temp
 
 def parseItem(item: dict):
+    itemStats:list = []
     if item['itemType'] == 'Weapon':
-        return [("Name: ", f"```{item['name']}```", False),
+        itemStats =  [("Name: ", f"```{item['name']}```", False),
                 ("Type: ", f"```{item['itemType']}```", True),
                 ("Rarity: ", f"```{item['itemGrade']}```", True),
                 ("Category: ", f"```{item['weaponType']}```", True),
@@ -303,7 +312,7 @@ def parseItem(item: dict):
                 ("Healing Reduction(Attack): ", f"```{item['decreaseRecoveryToBasicAttack']}```", True),
                 ("Healing Reduction(Spell): ", f"```{item['decreaseRecoveryToSkill']}```", True)]
     elif item['itemType'] == 'Armor':
-        return [("Name: ", f"```{item['name']}```", False),
+        itemStats =  [("Name: ", f"```{item['name']}```", False),
                 ("Type: ", f"```{item['itemType']}```", True),
                 ("Rarity: ", f"```{item['itemGrade']}```", True),
                 ("Category: ", f"```{item['armorType']}```", True),
@@ -332,13 +341,101 @@ def parseItem(item: dict):
                 ("Attack Reduction: ", f"```{item['preventBasicAttackDamaged']}```", True),
                 ("Spell Reduction: ", f"```{item['preventSkillDamagedRatio']}```", True)]
     elif item['itemType'] == 'Misc':
-        return [("Name: ", f"```{item['name']}```", False),
+        itemStats =  [("Name: ", f"```{item['name']}```", False),
                 ("Type: ", f"```{item['itemType']}```", True),
                 ("Rarity: ", f"```{item['itemGrade']}```", True),
                 ("Stack Size: ", f"```{item['stackable']}```", True),
                 ("Pick-up Amount: ", f"```{item['initialCount']}```", True)]
-    else:
+    elif item['itemType'] == 'Consume':
+        itemStats =  [("Name: ", f"```{item['name']}```", False),
+                ("Type: ", f"```{item['itemType']}```", True),
+                ("Rarity: ", f"```{item['itemGrade']}```", True),
+                ("Food/Beverage: ", f"```{item['consumableType']}```", True),
+                ("Stack Size: ", f"```{item['stackable']}```", True),
+                ("Pick-up Amount: ", f"```{item['initialCount']}```", True),
+                ("Instant Heal: ", f"```{item['heal']}```", True),
+                ("HP Recovery: ", f"```{item['hpRecover']}```", True),
+                ("SP Recovery: ", f"```{item['spRecover']}```", True)]
+    return itemStats
+
+    
+def parseBuildTree(material_1: int, material_2: int, parentName: str, tree: dict):
+    """Recursive Function that creates a dictionary with nodes of an item's build tree."""
+    # Checks if material_1 and material 2 are misc items
+    item_1 = findMiscItem(material_1)
+    item_2 = findMiscItem(material_2)
+
+    
+    if not item_1:
+        # If material_1 was not a misc item, checks if it is a weapon
+        item_1 = findEquipment(material_1, True)
+    elif item_1['itemType'] == 'Misc':
+        # If material_1 was a misc item, finds the item name and stores it.
+        item_1['name'] = findItemName(material_1, False, True)
+
+    if not item_1:
+        # If material_1 was not a weapon item, checks if it is an armor
+        item_1 = findEquipment(material_1)
+    elif item_1['itemType'] == 'Weapon':
+        # If material_1 was a weapon, finds the item name and stores it.
+        item_1['name'] = findItemName(material_1, True)
+
+    if not item_1:
+        # If material_1 was not an armor, checks if it is a consumable
+        item_1 = findConsumable(material_1)
+    elif item_1['itemType'] == 'Armor':
+        # If material_1 was an armor, finds the item name and stores it.
+        item_1['name'] = findItemName(material_1)
+
+    if not item_1:
+        # If material_1 was not an armor, returns empty list to prevent further chaos
         return []
+    elif item_1['itemType'] == 'Consume':
+        # If material_1 was an armor, finds the item name and stores it.
+        item_1['name'] = findItemName(material_1, False, False, True)
+
+    #---------------------- Item 2 -----------------------------------------------
+
+    if not item_2:
+        # If material_2 was not a misc item, checks if it is a weapon
+        item_2 = findEquipment(material_2, True)
+    elif item_2['itemType'] == 'Misc':
+        # If material_2 was a misc item, finds the item name and stores it.
+        item_2['name'] = findItemName(material_2, False, True)
+
+    if not item_2:
+        # If material_2 was not a weapon item, checks if it is an armor
+        item_2 = findEquipment(material_2)
+    elif item_2['itemType'] == 'Weapon':
+        # If material_2 was a weapon, finds the item name and stores it.
+        item_2['name'] = findItemName(material_2, True)
+
+    if not item_2:
+        # If material_2 was not an armor, returns empty list to prevent further chaos
+        item_2 = findConsumable(material_2)
+    elif item_2['itemType'] == 'Armor':
+        # If material_2 was an armor, finds the item name and stores it.
+        item_2['name'] = findItemName(material_2)
+
+    if not item_2:
+        # If material_2 was not an armor, returns empty list to prevent further chaos
+        return []
+    elif item_2['itemType'] == 'Consume':
+        # If material_2 was an armor, finds the item name and stores it.
+        item_2['name'] = findItemName(material_2, False, False, True)
+
+    # -------------------------- Binary Tree Manipulation ----------------------------
+
+    # Creates an entry in dict where the itemName is the key the two material names are stored as a list
+    tree[parentName] = [item_1['name'], item_2['name']]
+
+    # Checks if material_1 also has a build tree. If yes, follows that build tree
+    if 'makeMaterial1' in item_1 and item_1['makeMaterial1']:
+        parseBuildTree(item_1['makeMaterial1'], item_1['makeMaterial2'], item_1['name'], tree)
+
+    # Checks if material_2 also has a build tree. If yes, follows that build tree    
+    if 'makeMaterial1' in item_2 and item_2['makeMaterial1']:
+        parseBuildTree(item_2['makeMaterial1'], item_2['makeMaterial2'], item_2['name'], tree)
 
 def gameModeSwitch(mode: any):
     """"General Helper function that takes in a string and matches it to a number if in the switch"""
