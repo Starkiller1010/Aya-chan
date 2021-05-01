@@ -238,7 +238,7 @@ def findItemCode(item: str):
         for part in nonFormattedName:
             name = name.__add__(part.capitalize())
     else:
-        name = nonFormattedName[0]
+        name = nonFormattedName[0].capitalize()
     with open(os.path.join(__location__, '../resources/lookup/itemNames.json'), encoding='utf-8') as a:
         inv_names: dict = json.load(a)
     if name in inv_names:
