@@ -284,78 +284,147 @@ def parseLeaderboard(data: list):
         temp.append(f"Rank {player['rank']}: {player['nickname']}\n")
     return temp
 
+def parseWeapon(item: dict):
+    tempArr: list = []
+    tempArr.append(("Name: ", f"```{item['name']}```", False))
+    tempArr.append(("Type: ", f"```{item['itemType']}```", True))
+    tempArr.append(("Rarity: ", f"```{item['itemGrade']}```", True))
+    tempArr.append(("Category: ", f"```{item['weaponType']}```", True))
+    if item['attackPower'] != 0:
+        tempArr.append(("Atk Power: ", f"```{item['attackPower']}```", True))
+    if item['defense'] != 0:
+        tempArr.append(("Defense: ", f"```{item['defense']}```", True))
+    if item['maxHp'] != 0:
+        tempArr.append(("Max Hp: ", f"```{item['maxHp']}```", True))
+    if item['hpRegen'] != 0:
+        tempArr.append(("HP Regen: ", f"```{item['hpRegen']}```", True))
+    if item['spRegen'] != 0:
+        tempArr.append(("SP Regen: ", f"```{item['spRegen']}```", True))
+    if item['hpRegenRatio'] != 0:
+        tempArr.append(("HP Regen %: ", f"```{item['hpRegenRatio']}```", True))
+    if item['spRegenRatio'] != 0:
+        tempArr.append(("SP Regen %: ", f"```{item['spRegenRatio']}```", True))
+    if item['attackSpeedRatio'] != 0:
+        tempArr.append(("Attack Speed %: ", f"```{item['attackSpeedRatio']}```", True))
+    if item['criticalStrikeChance'] != 0:
+        tempArr.append(("Crit Chance: ", f"```{item['criticalStrikeChance']}```", True))
+    if item['criticalStrikeDamage'] !=0:
+        tempArr.append(("Crit Damage: ", f"```{item['criticalStrikeDamage']}```", True))
+    if item['cooldownReduction'] !=0:
+        tempArr.append(("Cooldown Reduction: ", f"```{item['cooldownReduction']}```", True))
+    if item['lifeSteal'] !=0:
+        tempArr.append(("Life Steal: ", f"```{item['lifeSteal']}```", True))
+    if item['moveSpeed'] !=0:
+        tempArr.append(("Move Speed: ", f"```{item['moveSpeed']}```", True))
+    if item['sightRange'] !=0:
+        tempArr.append(("Sight Range: ", f"```{item['sightRange']}```", True))
+    if item['attackRange'] !=0:
+        tempArr.append(("Attack Range: ", f"```{item['attackRange']}```", True))
+    if item['increaseBasicAttackDamage'] !=0:
+        tempArr.append(("ENAD: ", f"```{item['increaseBasicAttackDamage']}```", True))
+    if item['increaseSkillDamage'] !=0:
+        tempArr.append(("Skill Damage: ", f"```{item['increaseSkillDamage']}```", True))
+    if item['increaseSkillDamageRatio'] !=0:
+        tempArr.append(("Skill Damage %: ", f"```{item['increaseSkillDamageRatio']}```", True))
+    if item['decreaseRecoveryToBasicAttack'] !=0:
+        tempArr.append(("Healing Reduction(Attack): ", f"```{item['decreaseRecoveryToBasicAttack']}```", True))
+    if item['decreaseRecoveryToSkill'] !=0:
+        tempArr.append(("Healing Reduction(Spell): ", f"```{item['decreaseRecoveryToSkill']}```", True))
+    return tempArr
+
+
+def parseArmor(item: dict):
+    tempArr: list = []
+    tempArr.append(("Name: ", f"```{item['name']}```", False))
+    tempArr.append(("Type: ", f"```{item['itemType']}```", True))
+    tempArr.append(("Rarity: ", f"```{item['itemGrade']}```", True))
+    tempArr.append(("Category: ", f"```{item['armorType']}```", True))
+    if item['attackPower'] != 0:
+        tempArr.append(("Atk Power: ", f"```{item['attackPower']}```", True))
+    if item['defense'] != 0:
+        tempArr.append(("Defense: ", f"```{item['defense']}```", True))
+    if item['maxHp'] != 0:
+        tempArr.append(("Max Hp: ", f"```{item['maxHp']}```", True))
+    if item['hpRegen'] != 0:
+        tempArr.append(("HP Regen: ", f"```{item['hpRegen']}```", True))
+    if item['spRegen'] != 0:
+        tempArr.append(("SP Regen: ", f"```{item['spRegen']}```", True))
+    if item['hpRegenRatio'] != 0:
+        tempArr.append(("HP Regen %: ", f"```{item['hpRegenRatio']}```", True))
+    if item['spRegenRatio'] != 0:
+        tempArr.append(("SP Regen %: ", f"```{item['spRegenRatio']}```", True))
+    if item['attackSpeedRatio'] != 0:
+        tempArr.append(("Attack Speed %: ", f"```{item['attackSpeedRatio']}```", True))
+    if item['criticalStrikeChance'] != 0:
+        tempArr.append(("Crit Chance: ", f"```{item['criticalStrikeChance']}```", True))
+    if item['criticalStrikeDamage'] != 0:
+        tempArr.append(("Crit Damage: ", f"```{item['criticalStrikeDamage']}```", True))
+    if item['cooldownReduction'] != 0:
+        tempArr.append(("Cooldown Reduction: ", f"```{item['cooldownReduction']}```", True))
+    if item['lifeSteal'] != 0:
+        tempArr.append(("Life Steal: ", f"```{item['lifeSteal']}```", True))
+    if item['moveSpeed'] != 0:
+        tempArr.append(("Move Speed: ", f"```{item['moveSpeed']}```", True))
+    if item['outOfCombatMoveSpeed'] != 0:
+        tempArr.append(("Move Speed(Out of Combat): ", f"```{item['outOfCombatMoveSpeed']}```", True))
+    if item['sightRange'] != 0:
+        tempArr.append(("Sight Range: ", f"```{item['sightRange']}```", True))
+    if item['attackRange'] != 0:
+        tempArr.append(("Attack Range: ", f"```{item['attackRange']}```", True))
+    if item['increaseBasicAttackDamage'] != 0:
+        tempArr.append(("ENAD: ", f"```{item['increaseBasicAttackDamage']}```", True))
+    if item['increaseSkillDamage'] != 0:
+        tempArr.append(("Skill Damage: ", f"```{item['increaseSkillDamage']}```", True))
+    if item['increaseSkillDamageRatio'] != 0:
+        tempArr.append(("Skill Damage %: ", f"```{item['increaseSkillDamageRatio']}```", True))
+    if item['decreaseRecoveryToBasicAttack'] != 0:
+        tempArr.append(("Healing Reduction(Attack): ", f"```{item['decreaseRecoveryToBasicAttack']}```", True))
+    if item['decreaseRecoveryToSkill'] != 0:
+        tempArr.append(("Healing Reduction(Spell): ", f"```{item['decreaseRecoveryToSkill']}```", True))
+    if item['preventCriticalStrikeDamaged'] != 0:
+        tempArr.append(("Crit Damage Reduction", f"```{item['preventCriticalStrikeDamaged']}```", True))
+    if item['preventBasicAttackDamaged'] != 0:
+        tempArr.append(("Attack Reduction: ", f"```{item['preventBasicAttackDamaged']}```", True))
+    if item['preventSkillDamagedRatio'] != 0:
+        tempArr.append(("Spell Reduction: ", f"```{item['preventSkillDamagedRatio']}```", True))
+    return tempArr
+
+def parseMisc(item: dict):
+    #we probably don't need this now but I'm implementing it this way just in case
+    tempArr: list = []
+    tempArr.append(("Name: ", f"```{item['name']}```", False))
+    tempArr.append(("Type: ", f"```{item['itemType']}```", True))
+    tempArr.append(("Rarity: ", f"```{item['itemGrade']}```", True))
+    tempArr.append(("Stack Size: ", f"```{item['stackable']}```", True))
+    tempArr.append(("Pick-up Amount: ", f"```{item['initialCount']}```", True))
+    return tempArr
+
+def parseConsume(item: dict):
+    tempArr: list = []
+    tempArr.append(("Name: ", f"```{item['name']}```", False))
+    tempArr.append(("Type: ", f"```{item['itemType']}```", True))
+    tempArr.append(("Rarity: ", f"```{item['itemGrade']}```", True))
+    tempArr.append(("Food/Beverage: ", f"```{item['consumableType']}```", True))
+    tempArr.append(("Stack Size: ", f"```{item['stackable']}```", True))
+    tempArr.append(("Pick-up Amount: ", f"```{item['initialCount']}```", True))
+    if item['heal'] != 0:
+        tempArr.append(("Instant Heal: ", f"```{item['heal']}```", True))
+    if item['hpRecover'] != 0:
+        tempArr.append(("HP Recovery: ", f"```{item['hpRecover']}```", True))
+    if item['spRecover'] != 0:
+        tempArr.append(("SP Recovery: ", f"```{item['spRecover']}```", True))
+    return tempArr
+
 def parseItem(item: dict):
     itemStats:list = []
     if item['itemType'] == 'Weapon':
-        itemStats =  [("Name: ", f"```{item['name']}```", False),
-                ("Type: ", f"```{item['itemType']}```", True),
-                ("Rarity: ", f"```{item['itemGrade']}```", True),
-                ("Category: ", f"```{item['weaponType']}```", True),
-                ("Atk Power: ", f"```{item['attackPower']}```", True),
-                ("Defense: ", f"```{item['defense']}```", True),
-                ("Max Hp: ", f"```{item['maxHp']}```", True),
-                ("HP Regen: ", f"```{item['hpRegen']}```", True),
-                ("SP Regen: ", f"```{item['spRegen']}```", True),
-                ("HP Regen %: ", f"```{item['hpRegenRatio']}```", True),
-                ("SP Regen %: ", f"```{item['spRegenRatio']}```", True),
-                ("Attack Speed %: ", f"```{item['attackSpeedRatio']}```", True),
-                ("Crit Chance: ", f"```{item['criticalStrikeChance']}```", True),
-                ("Crit Damage: ", f"```{item['criticalStrikeDamage']}```", True),
-                ("Cooldown Reduction: ", f"```{item['cooldownReduction']}```", True),
-                ("Life Steal: ", f"```{item['lifeSteal']}```", True),
-                ("Move Speed: ", f"```{item['moveSpeed']}```", True),
-                ("Sight Range: ", f"```{item['sightRange']}```", True),
-                ("Attack Range: ", f"```{item['attackRange']}```", True),
-                ("ENAD: ", f"```{item['increaseBasicAttackDamage']}```", True),
-                ("Skill Damage: ", f"```{item['increaseSkillDamage']}```", True),
-                ("Skill Damage %: ", f"```{item['increaseSkillDamageRatio']}```", True),
-                ("Healing Reduction(Attack): ", f"```{item['decreaseRecoveryToBasicAttack']}```", True),
-                ("Healing Reduction(Spell): ", f"```{item['decreaseRecoveryToSkill']}```", True)]
+        itemStats =  parseWeapon(item)
     elif item['itemType'] == 'Armor':
-        itemStats =  [("Name: ", f"```{item['name']}```", False),
-                ("Type: ", f"```{item['itemType']}```", True),
-                ("Rarity: ", f"```{item['itemGrade']}```", True),
-                ("Category: ", f"```{item['armorType']}```", True),
-                ("Atk Power: ", f"```{item['attackPower']}```", True),
-                ("Defense: ", f"```{item['defense']}```", True),
-                ("Max Hp: ", f"```{item['maxHp']}```", True),
-                ("HP Regen: ", f"```{item['hpRegen']}```", True),
-                ("SP Regen: ", f"```{item['spRegen']}```", True),
-                ("HP Regen %: ", f"```{item['hpRegenRatio']}```", True),
-                ("SP Regen %: ", f"```{item['spRegenRatio']}```", True),
-                ("Attack Speed %: ", f"```{item['attackSpeedRatio']}```", True),
-                ("Crit Chance: ", f"```{item['criticalStrikeChance']}```", True),
-                ("Crit Damage: ", f"```{item['criticalStrikeDamage']}```", True),
-                ("Cooldown Reduction: ", f"```{item['cooldownReduction']}```", True),
-                ("Life Steal: ", f"```{item['lifeSteal']}```", True),
-                ("Move Speed: ", f"```{item['moveSpeed']}```", True),
-                ("Move Speed(Out of Combat): ", f"```{item['outOfCombatMoveSpeed']}```", True),
-                ("Sight Range: ", f"```{item['sightRange']}```", True),
-                ("Attack Range: ", f"```{item['attackRange']}```", True),
-                ("ENAD: ", f"```{item['increaseBasicAttackDamage']}```", True),
-                ("Skill Damage: ", f"```{item['increaseSkillDamage']}```", True),
-                ("Skill Damage %: ", f"```{item['increaseSkillDamageRatio']}```", True),
-                ("Healing Reduction(Attack): ", f"```{item['decreaseRecoveryToBasicAttack']}```", True),
-                ("Healing Reduction(Spell): ", f"```{item['decreaseRecoveryToSkill']}```", True),
-                ("Crit Damage Reduction", f"```{item['preventCriticalStrikeDamaged']}```", True),
-                ("Attack Reduction: ", f"```{item['preventBasicAttackDamaged']}```", True),
-                ("Spell Reduction: ", f"```{item['preventSkillDamagedRatio']}```", True)]
+        itemStats =  parseArmor(item)
     elif item['itemType'] == 'Misc':
-        itemStats =  [("Name: ", f"```{item['name']}```", False),
-                ("Type: ", f"```{item['itemType']}```", True),
-                ("Rarity: ", f"```{item['itemGrade']}```", True),
-                ("Stack Size: ", f"```{item['stackable']}```", True),
-                ("Pick-up Amount: ", f"```{item['initialCount']}```", True)]
+        itemStats =  parseMisc(item)
     elif item['itemType'] == 'Consume':
-        itemStats =  [("Name: ", f"```{item['name']}```", False),
-                ("Type: ", f"```{item['itemType']}```", True),
-                ("Rarity: ", f"```{item['itemGrade']}```", True),
-                ("Food/Beverage: ", f"```{item['consumableType']}```", True),
-                ("Stack Size: ", f"```{item['stackable']}```", True),
-                ("Pick-up Amount: ", f"```{item['initialCount']}```", True),
-                ("Instant Heal: ", f"```{item['heal']}```", True),
-                ("HP Recovery: ", f"```{item['hpRecover']}```", True),
-                ("SP Recovery: ", f"```{item['spRecover']}```", True)]
+        itemStats =  parseConsume(item)
     return itemStats
 
     
